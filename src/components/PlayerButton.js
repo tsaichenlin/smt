@@ -6,7 +6,7 @@ const Button = styled.button`
   background-color: var(--gray);
   font-weight: 800;
   padding: 0px 20px;
-  font-size: 18px;
+  font-size: 16px;
   border: none;
 
   display: flex;
@@ -20,6 +20,8 @@ const Button = styled.button`
   p {
     padding: 0;
     margin: 0;
+    font-size: 15px;
+    text-align: left;
   }
 `;
 

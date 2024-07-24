@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import photoPlaceHolder from "../images/photoPlaceHolder.webp";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { GlobalContext } from "../GlobalContext";
 
 const Card = styled.div`
   background-color: var(--dark-blue);
@@ -66,6 +67,7 @@ const DropdownContent = styled.div`
   z-index: 1;
   display: ${(props) => (props.show ? "block" : "none")};
   width: 100%;
+  padding: 5px 0;
   background-color: var(--white);
 `;
 const Option = styled.button`
@@ -74,7 +76,7 @@ const Option = styled.button`
   width: 100%;
   z-index: 2;
   border: none;
-  height: ${(props) => (props.first || props.last ? "25px" : "20px")};
+  height: 20px;
   text-align: center;
   box-shadow: none;
   color: var(--blue);
@@ -89,6 +91,8 @@ const Option = styled.button`
 
 function SearchCard({ player }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
+
   const generateSecondary = (positions) => {
     if (positions) {
       return positions
@@ -104,6 +108,14 @@ function SearchCard({ player }) {
   };
   const handleMouseLeave = () => {
     setDropdownOpen(false);
+  };
+
+  const handleSelectPlayer = (position) => () => {
+    const playerName = player.first_name + " " + player.last_name;
+    setGlobalPlayers((prevPlayers) => ({
+      ...prevPlayers,
+      [position]: { name: playerName, id: player.player_id },
+    }));
   };
 
   return (
@@ -123,15 +135,19 @@ function SearchCard({ player }) {
       <Dropdown onMouseLeave={handleMouseLeave}>
         <DropdownButton onClick={toggleDropdown}>Select</DropdownButton>
         <DropdownContent show={dropdownOpen}>
-          <Option first>Pitcher</Option>
-          <Option>Catcher</Option>
-          <Option>1st Base</Option>
-          <Option>2nd Base</Option>
-          <Option>3rd Base</Option>
-          <Option>Shortstop</Option>
-          <Option>Left Field</Option>
-          <Option>Center Field</Option>
-          <Option last>Right Field</Option>
+          <Option first onClick={handleSelectPlayer("Pitcher")}>
+            Pitcher
+          </Option>
+          <Option onClick={handleSelectPlayer("Catcher")}>Catcher</Option>
+          <Option onClick={handleSelectPlayer("First")}>1st Base</Option>
+          <Option onClick={handleSelectPlayer("Second")}>2nd Base</Option>
+          <Option onClick={handleSelectPlayer("Third")}>3rd Base</Option>
+          <Option onClick={handleSelectPlayer("Shortstop")}>Shortstop</Option>
+          <Option onClick={handleSelectPlayer("Left")}>Left Field</Option>
+          <Option onClick={handleSelectPlayer("Center")}>Center Field</Option>
+          <Option onClick={handleSelectPlayer("Right")} last>
+            Right Field
+          </Option>
         </DropdownContent>
       </Dropdown>
     </Card>

@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { GlobalContext } from "../GlobalContext";
 
 import Nav from "../components/Nav";
 import SimButton from "../components/SimButton";
@@ -125,6 +126,7 @@ const SearchSection = styled.div`
 function Simulator() {
   const [editMode, setEditMode] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
 
   const enterEditMode = () => {
     setEditMode(true);
@@ -153,15 +155,15 @@ function Simulator() {
 
       <TeamSection>
         <EditButton onClick={enterEditMode} />
-        <PlayerButton name="Player 1" position="C" />
-        <PlayerButton name="Player 2" position="1B" />
-        <PlayerButton name="Player 3" position="2B" />
-        <PlayerButton name="Player 4" position="3B" />
-        <PlayerButton name="Player 5" position="SS" />
-        <PlayerButton name="Player 6" position="LF" />
-        <PlayerButton name="Player 7" position="RF" />
-        <PlayerButton name="Player 8" position="CF" />
-        <PlayerButton name="Player 9" position="??" />{" "}
+        <PlayerButton name={globalPlayers.Pitcher.name} position="P" />
+        <PlayerButton name={globalPlayers.Catcher.name} position="C" />
+        <PlayerButton name={globalPlayers.First.name} position="1B" />
+        <PlayerButton name={globalPlayers.Second.name} position="2B" />
+        <PlayerButton name={globalPlayers.Third.name} position="3B" />
+        <PlayerButton name={globalPlayers.Shortstop.name} position="SS" />
+        <PlayerButton name={globalPlayers.Left.name} position="LF" />
+        <PlayerButton name={globalPlayers.Center.name} position="CF" />
+        <PlayerButton name={globalPlayers.Right.name} position="RF" />
       </TeamSection>
       {editMode && (
         <EditPanel>
