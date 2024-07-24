@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-
+import fullField from "../images/fullField.png";
 const Container = styled.div`
   display: flex;
   width: 100vw;
@@ -36,7 +36,7 @@ function Start() {
       <h1>
         Welcome to <span>Baseball Data</span>
       </h1>
-      <StartButton id="start-button" to="/simulator">
+      <StartButton id="start-button" to="/sim">
         Get Started!
       </StartButton>
     </Container>

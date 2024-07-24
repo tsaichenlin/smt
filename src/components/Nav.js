@@ -1,23 +1,33 @@
-import "./components.css";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin: 10px 30px;
-
-  h
-  color: var(--red);
+  align-items: baseline;
+  margin: 0px 30px;
 `;
 
+const LinkContainer = styled(Container)`
+  margin: 0px;
+  gap: 20px;
+  font-weight: 600;
+`;
+
+const NavLink = styled(Link)`
+  color: var(--white);
+  text-decoration: none;
+`;
 function Nav() {
   return (
     <Container>
-      <h1>Baseball Data</h1>
-      <Link>How It Works</Link>
-      <Link>About</Link>
+      <Link to="/sim" style={{ textDecoration: "none" }}>
+        <h1>Baseball Data</h1>
+      </Link>
+      <LinkContainer>
+        <NavLink to="/how">How It Works</NavLink>
+        <NavLink to="/about">About</NavLink>
+      </LinkContainer>
     </Container>
   );
 }
