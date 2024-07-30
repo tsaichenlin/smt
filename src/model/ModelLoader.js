@@ -27,7 +27,7 @@ const ModelLoader = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
+
         const [battedBallData, situationData, positionData] = await Promise.all([
           fetch('./Database/batted_ball_Input.json').then(response => response.json()),
           fetch('./Database/situation_Input.json').then(response => response.json()),
@@ -67,10 +67,7 @@ const ModelLoader = () => {
 
         setError(null);
         console.log('Data fetched');
-      } catch (err) {
-        console.error('Error fetching JSON:', err);
-        setError(err);
-      }
+
     };
 
     fetchData();
