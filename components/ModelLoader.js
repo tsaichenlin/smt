@@ -1,69 +1,256 @@
-import React, { useEffect, useState } from 'react';
-import * as tf from '@tensorflow/tfjs';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+
+const MAX_CONCURRENT_WORKERS = 2; // Adjust this number based on your available resources
+const total_plays = 10; // Adjust as needed
 
 const ModelLoader = () => {
-  const [model, setModel] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [baseRV, setBaseRV] = useState(0);
   const [error, setError] = useState(null);
-  const [prediction, setPrediction] = useState(null);
+  const [battedBallInput, setBattedBallInput] = useState([]);
+  const [situationInput, setSituationInput] = useState([]);
+  const [positionInput, setPositionInput] = useState([]);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const runValueReturned = useRef(false);
+  const runValueRef = useRef(null);
+
+  const [runValue, setRunValue] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [expectedRVAtPos, setExpectedRVAtPos] = useState(Array(9).fill(0));
+  const expectedRVAtPosRef = useRef(expectedRVAtPos);
+
+  const [bestPlayers, setBestPlayers] = useState([]);
+  const [worstPlayers, setWorstPlayers] = useState([]);
+
+  const workers = useRef([]);
 
   useEffect(() => {
-    const loadModel = async () => {
+    const fetchData = async () => {
       try {
-        // Load the model from the JSON file
-        const loadedModel = await tf.loadGraphModel('/model/model.json');
-        setModel(loadedModel);
-        console.log('Model loaded successfully');
-        setLoading(false);
+        const [battedBallData, situationData, positionData] = await Promise.all([
+          fetch('/Database/batted_ball_Input.json').then(response => response.json()),
+          fetch('/Database/situation_Input.json').then(response => response.json()),
+          fetch('/Database/position_Input.json').then(response => response.json()),
+        ]);
+
+        setBattedBallInput(battedBallData.slice(0, total_plays));
+        setSituationInput(situationData.slice(0, total_plays));
+        setPositionInput(positionData.slice(0, total_plays));
+
+        // Initialize and preload workers
+        for (let i = 0; i < MAX_CONCURRENT_WORKERS; i++) {
+          const worker = new Worker(new URL('./worker.js', import.meta.url));
+          worker.postMessage({ preload: true });
+          worker.onmessage = () => {
+            console.log(`Worker ${i} preloaded`);
+          };
+          workers.current.push(worker);
+        }
+
+        // Initialize the worker for the base lineup [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        const workerInstance = new Worker(new URL('./worker.js', import.meta.url));
+        workerInstance.onmessage = (e) => {
+          setBaseRV(e.data.result);
+          workerInstance.terminate();
+        };
+        workerInstance.onerror = (err) => {
+          console.error('Error in worker:', err);
+          setError(err);
+          workerInstance.terminate();
+        };
+        workerInstance.postMessage({
+          battedBallInput: battedBallData.slice(0, total_plays),
+          situationInput: situationData.slice(0, total_plays),
+          positionInput: positionData.slice(0, total_plays),
+          lineup: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        });
+
+        setError(null);
+        console.log('Data fetched');
       } catch (err) {
-        console.error('Error loading model:', err);
+        console.error('Error fetching JSON:', err);
         setError(err);
-        setLoading(false);
       }
     };
 
-    loadModel();
+    fetchData();
+    return () => {
+      // Terminate workers when the component unmounts
+      workers.current.forEach(worker => worker.terminate());
+    };
   }, []);
 
-  const makePrediction = async () => {
-    if (model) {
-      try {
-        // Example input, modify the shape if necessary to match the model's expected input shape
-        const input = tf.tensor2d([[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]], [1, 20]);
+  useEffect(() => {
+  }, [expectedRVAtPos]);
+    let workersReturned = 0;
+  const processBatch = useCallback(async (batch) => {
+    let pitcher = 0;
+    let catcher = 0;
+    let first = 0;
+    let second = 0;
+    let third = 0;
+    let shortstop =0;
+    let left = 0;
+    let center = 0;
+    let right = 0;
+    const workerPromises = batch.map((lineup, index) =>
+      new Promise((resolve, reject) => {
+        const workerInstance = workers.current[index % MAX_CONCURRENT_WORKERS];
 
-        // Make a prediction
-        const predictionTensor = model.predict(input);
+        const handleMessage = (e) => {
+          
+          const place = lineup[9];
+          const result = baseRV - e.data.result;
 
-        // Extract the prediction value
-        const predictionArray = await predictionTensor.data();
-        const predictionValue = predictionArray[0];
+          if (place === 0) {
+            runValueReturned.current = true;
+            runValueRef.current = result;
+            setRunValue(result);
 
-        // Set the prediction value in the state
-        setPrediction(predictionValue);
-        console.log('Prediction for input:', predictionValue);
+            setExpectedRVAtPos((prevResults) => {
+              const updatedResults = prevResults.map((val, idx) =>
+                val !== 0 ? result - val : val
+              );
+              return updatedResults;
+            });
+          } else {
+            setExpectedRVAtPos((prevResults) => {
+              const updatedResults = [...prevResults];
+              if (runValueReturned.current) {
+                updatedResults[place - 1] = runValueRef.current - result;
+              } else {
+                updatedResults[place - 1] = result;
+              }
+              expectedRVAtPosRef.current = updatedResults;
+              return updatedResults;
+            });
+          }
+          resolve();
+          workersReturned++;
+        };
 
-        // Dispose tensors to avoid memory leaks
-        input.dispose();
-        predictionTensor.dispose();
-      } catch (err) {
-        console.error('Error making prediction:', err);
-        setError(err);
+        const handleError = (err) => {
+          console.error('Error in worker:', err);
+          setError(err);
+          reject(err);
+        };
+
+        workerInstance.onmessage = handleMessage;
+        workerInstance.onerror = handleError;
+
+        const cutLineup = lineup.slice(0, 9);
+        workerInstance.postMessage({
+          battedBallInput,
+          situationInput,
+          positionInput,
+          lineup: cutLineup
+        });
+      })
+    );
+
+    await Promise.all(workerPromises);
+
+    // Update best and worst players after all workers are done
+    if (workersReturned ==10){
+        console.log('Before the best worst eval', expectedRVAtPosRef.current);
+        console.log(expectedRVAtPos);
+        let top = [0];
+        let bottom = [0];
+
+        for (let i = 1; i < 9 && i < workersReturned; i++) {
+        for (let a = 0; a < 3; a++) {
+            if (expectedRVAtPosRef.current[top[a]] < expectedRVAtPosRef.current[i]) {
+            let next = i;
+            for (let b = a; b < 3; b++) {
+                const temp = top[b];
+                top[b] = next;
+                next = temp;
+            }
+            break;
+            }
+        }
+        if (top.length < 3 && top.length < i) {
+            top.push(i);
+        }
+        for (let a = 0; a < 3; a++) {
+            if (expectedRVAtPosRef.current[bottom[a]] > expectedRVAtPosRef.current[i]) {
+            let next = i;
+            for (let b = a; b < 3; b++) {
+                const temp = bottom[b];
+                bottom[b] = next;
+                next = temp;
+            }
+            break;
+            }
+        }
+        if (bottom.length < 3 && bottom.length < i) {
+            bottom.push(i);
+        }
+        }
+
+        console.log('Top Players:', top);
+        console.log('Bottom Players:', bottom);
+        setBestPlayers(top);
+        setWorstPlayers(bottom);
+        console.log(workersReturned);
+}
+  }, [battedBallInput, situationInput, positionInput, baseRV]);
+
+  const makePrediction = useCallback(async (lineup) => {
+    runValueReturned.current = false;
+    runValueRef.current = null;
+    setLoading(true);
+    setResults([]); // Clear previous results
+    setPlayers(lineup);
+    setExpectedRVAtPos(Array(9).fill(0)); // Reset expected run values
+
+    try {
+      const modLineup = [...lineup, 0];
+      const lineups = [modLineup];
+      for (let i = 0; i < 9; i++) {
+        const newLineup = [...lineup];
+        newLineup[i] = i + 1;
+        newLineup.push(i + 1);
+        lineups.push(newLineup);
       }
-    } else {
-      console.error('Model is not loaded yet');
-      setError('Model is not loaded yet');
+
+      for (let i = 0; i < lineups.length; i += MAX_CONCURRENT_WORKERS) {
+        const batch = lineups.slice(i, i + MAX_CONCURRENT_WORKERS);
+        await processBatch(batch);
+      }
+    } catch (err) {
+      console.error('Error making prediction:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [processBatch]);
+
+  const handlePredictionClick = () => {
+    if (!loading) {
+      makePrediction([392, 383, 431, 461, 463, 467, 535, 586, 624]);
     }
   };
 
   return (
     <div>
       <h1>TensorFlow.js Model Prediction</h1>
-      <button onClick={makePrediction}>Make Prediction</button>
-      {prediction !== null && <div>Prediction: {prediction}</div>}
+      <button onClick={handlePredictionClick} disabled={loading}>
+        {loading ? 'Making Prediction...' : 'Make Prediction'}
+      </button>
+      <div>
+        <h2>Results</h2>
+        <p>Base RV: {baseRV}</p>
+        <p>Resulting Lineup Run Value: {runValue}</p>
+        <p>Players: {players.join(', ')}</p>
+        <p>Expected RV at Position: {expectedRVAtPos.join(', ')}</p>
+        <p>Best Players: {bestPlayers.join(', ')}</p>
+        <p>Worst Players: {worstPlayers.join(', ')}</p>
+      </div>
       {error && <div>Error: {error.toString()}</div>}
     </div>
   );
 };
-
 
 export default ModelLoader;
