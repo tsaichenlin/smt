@@ -18,6 +18,7 @@ const NavLink = styled(Link)`
   color: var(--white);
   text-decoration: none;
 `;
+
 function Nav() {
   return (
     <Container>

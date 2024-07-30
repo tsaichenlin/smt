@@ -14,7 +14,7 @@ const Div = styled.div`
   position: relative;
   height: 100%;
   min-height: 100vh;
-
+  overflow: hidden;
   &::before {
     content: "";
     background-color: var(--dark-gray);
@@ -31,15 +31,26 @@ const Content = styled.div`
   display: flex;
   position: relative;
 `;
-
+const BgLineContainer = styled.div`
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  top: 50px;
+  height: calc(100%-50px);
+  width: 50%;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 const BgLine = styled.div`
   border: solid 1px var(--gray);
-  height: 650px;
-  width: calc(100% - 60px);
-  margin: 0px 30px;
+  height: 90%;
+  width: 90%;
 
   z-index: -1;
   position: relative;
+  top: 0;
   right: 0;
   overflow: hidden;
 
@@ -121,6 +132,7 @@ const ExitButton = styled.div`
 const SearchSection = styled.div`
   height: 90%;
   margin-left: 80px;
+  overflow: hidden;
 `;
 
 function Simulator() {
@@ -188,12 +200,18 @@ function Simulator() {
         <Left>
           <Img src={fullField}></Img>
           <SimButton></SimButton>
+          <div>
+            <p style={{ color: "var(--blue)" }}>
+              Select Players and Simulate the Play.
+            </p>
+          </div>
         </Left>
 
-        <Right>
-          <BgLine></BgLine>
-        </Right>
+        <Right></Right>
       </Content>
+      <BgLineContainer>
+        <BgLine></BgLine>
+      </BgLineContainer>
     </Div>
   );
 }

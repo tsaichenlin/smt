@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from "react";
 
 const MAX_CONCURRENT_WORKERS = 2;
 const total_plays = 10; //3890
-var lineups_results = [0,0,0,0,0,0,0,0,0];
+var lineups_results = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 const ModelLoader = () => {
   const [baseRV, setBaseRV] = useState(0);
   const [error, setError] = useState(null);
@@ -27,191 +27,208 @@ const ModelLoader = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const [battedBallData, situationData, positionData] = await Promise.all([
+        fetch("./Database/batted_ball_Input.json").then((response) =>
+          response.json()
+        ),
+        fetch("./Database/situation_Input.json").then((response) =>
+          response.json()
+        ),
+        fetch("./Database/position_Input.json").then((response) =>
+          response.json()
+        ),
+      ]);
 
-        const [battedBallData, situationData, positionData] = await Promise.all([
-          fetch('./Database/batted_ball_Input.json').then(response => response.json()),
-          fetch('./Database/situation_Input.json').then(response => response.json()),
-          fetch('./Database/position_Input.json').then(response => response.json()),
-        ]);
+      setBattedBallInput(battedBallData.slice(0, total_plays));
+      setSituationInput(situationData.slice(0, total_plays));
+      setPositionInput(positionData.slice(0, total_plays));
 
-        setBattedBallInput(battedBallData.slice(0, total_plays));
-        setSituationInput(situationData.slice(0, total_plays));
-        setPositionInput(positionData.slice(0, total_plays));
-
-        // Initialize and preload workers
-        for (let i = 0; i < MAX_CONCURRENT_WORKERS; i++) {
-          const worker = new Worker(new URL('./worker.js', import.meta.url));
-          worker.postMessage({ preload: true });
-          worker.onmessage = () => {
-            console.log(`Worker ${i} preloaded`);
-          };
-          workers.current.push(worker);
-        }
-
-        const workerInstance = new Worker(new URL('./worker.js', import.meta.url));
-        workerInstance.onmessage = (e) => {
-          setBaseRV(e.data.result);
-          workerInstance.terminate();
+      // Initialize and preload workers
+      for (let i = 0; i < MAX_CONCURRENT_WORKERS; i++) {
+        const worker = new Worker(new URL("./worker.js", import.meta.url));
+        worker.postMessage({ preload: true });
+        worker.onmessage = () => {
+          console.log(`Worker ${i} preloaded`);
         };
-        workerInstance.onerror = (err) => {
-          console.error('Error in worker:', err);
-          setError(err);
-          workerInstance.terminate();
-        };
-        workerInstance.postMessage({
-          battedBallInput: battedBallData.slice(0, total_plays),
-          situationInput: situationData.slice(0, total_plays),
-          positionInput: positionData.slice(0, total_plays),
-          lineup: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        });
+        workers.current.push(worker);
+      }
 
-        setError(null);
-        console.log('Data fetched');
+      const workerInstance = new Worker(
+        new URL("./worker.js", import.meta.url)
+      );
+      workerInstance.onmessage = (e) => {
+        setBaseRV(e.data.result);
+        workerInstance.terminate();
+      };
+      workerInstance.onerror = (err) => {
+        console.error("Error in worker:", err);
+        setError(err);
+        workerInstance.terminate();
+      };
+      workerInstance.postMessage({
+        battedBallInput: battedBallData.slice(0, total_plays),
+        situationInput: situationData.slice(0, total_plays),
+        positionInput: positionData.slice(0, total_plays),
+        lineup: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      });
 
+      setError(null);
+      console.log("Data fetched");
     };
 
     fetchData();
     return () => {
-      workers.current.forEach(worker => worker.terminate());
+      workers.current.forEach((worker) => worker.terminate());
     };
   }, []);
 
-  useEffect(() => {
-  }, [expectedRVAtPos]);
-    let workersReturned = 0;
-  const processBatch = useCallback(async (batch) => {
-    const workerPromises = batch.map((lineup, index) =>
-      new Promise((resolve, reject) => {
-        const workerInstance = workers.current[index % MAX_CONCURRENT_WORKERS];
+  useEffect(() => {}, [expectedRVAtPos]);
+  let workersReturned = 0;
+  const processBatch = useCallback(
+    async (batch) => {
+      const workerPromises = batch.map(
+        (lineup, index) =>
+          new Promise((resolve, reject) => {
+            const workerInstance =
+              workers.current[index % MAX_CONCURRENT_WORKERS];
 
-        const handleMessage = (e) => {
-          
-          const place = lineup[9];
-          const result = baseRV - e.data.result;
+            const handleMessage = (e) => {
+              const place = lineup[9];
+              const result = baseRV - e.data.result;
 
-          if (place === 0) {
-            runValueReturned.current = true;
-            runValueRef.current = result;
-            setRunValue(result);
+              if (place === 0) {
+                runValueReturned.current = true;
+                runValueRef.current = result;
+                setRunValue(result);
 
-            setExpectedRVAtPos((prevResults) => {
-              const updatedResults = prevResults.map((val, idx) =>
-                val !== 0 ? result - val : val
-              );
-              return updatedResults;
-            });
-          } else {
-            setExpectedRVAtPos((prevResults) => {
-              const updatedResults = [...prevResults];
-              if (runValueReturned.current) {
-                updatedResults[place - 1] = runValueRef.current - result;
-                lineups_results[place-1] = runValueRef.current - result;
+                setExpectedRVAtPos((prevResults) => {
+                  const updatedResults = prevResults.map((val, idx) =>
+                    val !== 0 ? result - val : val
+                  );
+                  return updatedResults;
+                });
               } else {
-                updatedResults[place - 1] = result;
+                setExpectedRVAtPos((prevResults) => {
+                  const updatedResults = [...prevResults];
+                  if (runValueReturned.current) {
+                    updatedResults[place - 1] = runValueRef.current - result;
+                    lineups_results[place - 1] = runValueRef.current - result;
+                  } else {
+                    updatedResults[place - 1] = result;
+                  }
+                  expectedRVAtPosRef.current = updatedResults;
+                  return updatedResults;
+                });
               }
-              expectedRVAtPosRef.current = updatedResults;
-              return updatedResults;
+              resolve();
+              workersReturned++;
+            };
+
+            const handleError = (err) => {
+              console.error("Error in worker:", err);
+              setError(err);
+              reject(err);
+            };
+
+            workerInstance.onmessage = handleMessage;
+            workerInstance.onerror = handleError;
+
+            const cutLineup = lineup.slice(0, 9);
+            workerInstance.postMessage({
+              battedBallInput,
+              situationInput,
+              positionInput,
+              lineup: cutLineup,
             });
-          }
-          resolve();
-          workersReturned++;
-        };
+          })
+      );
 
-        const handleError = (err) => {
-          console.error('Error in worker:', err);
-          setError(err);
-          reject(err);
-        };
+      await Promise.all(workerPromises);
 
-        workerInstance.onmessage = handleMessage;
-        workerInstance.onerror = handleError;
-
-        const cutLineup = lineup.slice(0, 9);
-        workerInstance.postMessage({
-          battedBallInput,
-          situationInput,
-          positionInput,
-          lineup: cutLineup
-        });
-      })
-    );
-
-    await Promise.all(workerPromises);
-
-    if (workersReturned ==10){
-        console.log('Before the best worst eval', lineups_results);
+      if (workersReturned == 10) {
+        console.log("Before the best worst eval", lineups_results);
         console.log(expectedRVAtPos);
         let top = [0];
         let bottom = [0];
 
         for (let i = 1; i < 9 && i < workersReturned; i++) {
-        for (let a = 0; a < 3; a++) {
-            if (expectedRVAtPosRef.current[top[a]] < expectedRVAtPosRef.current[i]) {
-            let next = i;
-            for (let b = a; b < 3; b++) {
+          for (let a = 0; a < 3; a++) {
+            if (
+              expectedRVAtPosRef.current[top[a]] < expectedRVAtPosRef.current[i]
+            ) {
+              let next = i;
+              for (let b = a; b < 3; b++) {
                 const temp = top[b];
                 top[b] = next;
                 next = temp;
+              }
+              break;
             }
-            break;
-            }
-        }
-        if (top.length < 3 && top.length < i) {
+          }
+          if (top.length < 3 && top.length < i) {
             top.push(i);
-        }
-        for (let a = 0; a < 3; a++) {
-            if (expectedRVAtPosRef.current[bottom[a]] > expectedRVAtPosRef.current[i]) {
-            let next = i;
-            for (let b = a; b < 3; b++) {
+          }
+          for (let a = 0; a < 3; a++) {
+            if (
+              expectedRVAtPosRef.current[bottom[a]] >
+              expectedRVAtPosRef.current[i]
+            ) {
+              let next = i;
+              for (let b = a; b < 3; b++) {
                 const temp = bottom[b];
                 bottom[b] = next;
                 next = temp;
+              }
+              break;
             }
-            break;
-            }
-        }
-        if (bottom.length < 3 && bottom.length < i) {
+          }
+          if (bottom.length < 3 && bottom.length < i) {
             bottom.push(i);
-        }
+          }
         }
 
-        console.log('Top Players:', top);
-        console.log('Bottom Players:', bottom);
+        console.log("Top Players:", top);
+        console.log("Bottom Players:", bottom);
         setBestPlayers(top);
         setWorstPlayers(bottom);
         console.log(workersReturned);
-}
-  }, [battedBallInput, situationInput, positionInput, baseRV]);
-
-  const makePrediction = useCallback(async (lineup) => {
-    runValueReturned.current = false;
-    runValueRef.current = null;
-    setLoading(true);
-    setResults([]); // Clear previous results
-    setPlayers(lineup);
-    setExpectedRVAtPos(Array(9).fill(0)); // Reset expected run values
-
-    try {
-      const modLineup = [...lineup, 0];
-      const lineups = [modLineup];
-      for (let i = 0; i < 9; i++) {
-        const newLineup = [...lineup];
-        newLineup[i] = i + 1;
-        newLineup.push(i + 1);
-        lineups.push(newLineup);
       }
+    },
+    [battedBallInput, situationInput, positionInput, baseRV]
+  );
 
-      for (let i = 0; i < lineups.length; i += MAX_CONCURRENT_WORKERS) {
-        const batch = lineups.slice(i, i + MAX_CONCURRENT_WORKERS);
-        await processBatch(batch);
+  const makePrediction = useCallback(
+    async (lineup) => {
+      runValueReturned.current = false;
+      runValueRef.current = null;
+      setLoading(true);
+      setResults([]); // Clear previous results
+      setPlayers(lineup);
+      setExpectedRVAtPos(Array(9).fill(0)); // Reset expected run values
+
+      try {
+        const modLineup = [...lineup, 0];
+        const lineups = [modLineup];
+        for (let i = 0; i < 9; i++) {
+          const newLineup = [...lineup];
+          newLineup[i] = i + 1;
+          newLineup.push(i + 1);
+          lineups.push(newLineup);
+        }
+
+        for (let i = 0; i < lineups.length; i += MAX_CONCURRENT_WORKERS) {
+          const batch = lineups.slice(i, i + MAX_CONCURRENT_WORKERS);
+          await processBatch(batch);
+        }
+      } catch (err) {
+        console.error("Error making prediction:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error making prediction:', err);
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [processBatch]);
+    },
+    [processBatch]
+  );
 
   const handlePredictionClick = () => {
     if (!loading) {
@@ -220,19 +237,19 @@ const ModelLoader = () => {
   };
 
   return (
-    <div>
+    <div style={{ color: "white" }}>
       <h1>TensorFlow.js Model Prediction</h1>
       <button onClick={handlePredictionClick} disabled={loading}>
-        {loading ? 'Making Prediction...' : 'Make Prediction'}
+        {loading ? "Making Prediction..." : "Make Prediction"}
       </button>
       <div>
         <h2>Results</h2>
         <p>Base RV: {baseRV}</p>
         <p>Resulting Lineup Run Value: {runValue}</p>
-        <p>Players: {players.join(', ')}</p>
-        <p>Expected RV at Position: {expectedRVAtPos.join(', ')}</p>
-        <p>Best Players: {bestPlayers.join(', ')}</p>
-        <p>Worst Players: {worstPlayers.join(', ')}</p>
+        <p>Players: {players.join(", ")}</p>
+        <p>Expected RV at Position: {expectedRVAtPos.join(", ")}</p>
+        <p>Best Players: {bestPlayers.join(", ")}</p>
+        <p>Worst Players: {worstPlayers.join(", ")}</p>
       </div>
       {error && <div>Error: {error.toString()}</div>}
     </div>
