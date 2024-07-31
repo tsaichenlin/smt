@@ -17,17 +17,26 @@ const LinkContainer = styled(Container)`
 const NavLink = styled(Link)`
   color: var(--white);
   text-decoration: none;
+  font-weight: 500;
 `;
 
-function Nav() {
+const Title = styled.h1`
+  font-weight: 500;
+`;
+
+function Nav(props) {
   return (
     <Container>
       <Link to="/sim" style={{ textDecoration: "none" }}>
-        <h1>Baseball Data</h1>
+        <Title style={{ color: props.color }}>Baseball Data</Title>
       </Link>
       <LinkContainer>
-        <NavLink to="/how">How It Works</NavLink>
-        <NavLink to="/about">About</NavLink>
+        <NavLink to="/how" style={{ color: props.color }}>
+          How It Works
+        </NavLink>
+        <NavLink to="/about" style={{ color: props.color }}>
+          About
+        </NavLink>
       </LinkContainer>
     </Container>
   );
