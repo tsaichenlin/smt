@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
+import Papa from "papaparse";
 
 const MAX_CONCURRENT_WORKERS = 2;
 const total_plays = 10; //3890
 var lineups_results = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 const ModelLoader = () => {
   const [baseRV, setBaseRV] = useState(0);
   const [error, setError] = useState(null);
@@ -11,6 +13,7 @@ const ModelLoader = () => {
   const [positionInput, setPositionInput] = useState([]);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [playerData, setPlayerData] = useState({});
 
   const runValueReturned = useRef(false);
   const runValueRef = useRef(null);
@@ -18,7 +21,8 @@ const ModelLoader = () => {
   const [runValue, setRunValue] = useState(null);
   const [players, setPlayers] = useState([]);
   const [expectedRVAtPos, setExpectedRVAtPos] = useState(Array(9).fill(0));
-  const expectedRVAtPosRef = useRef(expectedRVAtPos);
+  const [expectedRVAtPrimaryPos, setExpectedRVAtPrimaryPos] = useState(Array(9).fill(0));
+  const [PrimaryPos, setPrimaryPos] = useState(Array(9).fill(''));
 
   const [bestPlayers, setBestPlayers] = useState([]);
   const [worstPlayers, setWorstPlayers] = useState([]);
@@ -27,7 +31,7 @@ const ModelLoader = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [battedBallData, situationData, positionData] = await Promise.all([
+      const [battedBallData, situationData, positionData, playerCSV] = await Promise.all([
         fetch("./Database/batted_ball_Input.json").then((response) =>
           response.json()
         ),
@@ -37,15 +41,25 @@ const ModelLoader = () => {
         fetch("./Database/position_Input.json").then((response) =>
           response.json()
         ),
+        fetch("./Database/player_database_all_pos.csv").then((response) =>
+          response.text()
+        ),
       ]);
 
       setBattedBallInput(battedBallData.slice(0, total_plays));
       setSituationInput(situationData.slice(0, total_plays));
       setPositionInput(positionData.slice(0, total_plays));
 
+      // Parse CSV data
+      const parsedCSV = Papa.parse(playerCSV, { header: true });
+      const playerData = parsedCSV.data.reduce((acc, player) => {
+        acc[player.player_id] = player;
+        return acc;
+      }, {});
+
       // Initialize and preload workers
       for (let i = 0; i < MAX_CONCURRENT_WORKERS; i++) {
-        const worker = new Worker(new URL("./worker.js", import.meta.url));
+        const worker = new Worker(new URL("./worker.js", import.meta.url)); // Update path to worker script
         worker.postMessage({ preload: true });
         worker.onmessage = () => {
           console.log(`Worker ${i} preloaded`);
@@ -53,9 +67,7 @@ const ModelLoader = () => {
         workers.current.push(worker);
       }
 
-      const workerInstance = new Worker(
-        new URL("./worker.js", import.meta.url)
-      );
+      const workerInstance = new Worker(new URL("./worker.js", import.meta.url)); // Update path to worker script
       workerInstance.onmessage = (e) => {
         setBaseRV(e.data.result);
         workerInstance.terminate();
@@ -73,6 +85,7 @@ const ModelLoader = () => {
       });
 
       setError(null);
+      setPlayerData(playerData); // Update playerData state
       console.log("Data fetched");
     };
 
@@ -84,6 +97,7 @@ const ModelLoader = () => {
 
   useEffect(() => {}, [expectedRVAtPos]);
   let workersReturned = 0;
+
   const processBatch = useCallback(
     async (batch) => {
       const workerPromises = batch.map(
@@ -116,7 +130,7 @@ const ModelLoader = () => {
                   } else {
                     updatedResults[place - 1] = result;
                   }
-                  expectedRVAtPosRef.current = updatedResults;
+                  expectedRVAtPos.current = updatedResults;
                   return updatedResults;
                 });
               }
@@ -154,7 +168,7 @@ const ModelLoader = () => {
         for (let i = 1; i < 9 && i < workersReturned; i++) {
           for (let a = 0; a < 3; a++) {
             if (
-              expectedRVAtPosRef.current[top[a]] < expectedRVAtPosRef.current[i]
+              expectedRVAtPos.current[top[a]] < expectedRVAtPos.current[i]
             ) {
               let next = i;
               for (let b = a; b < 3; b++) {
@@ -170,8 +184,8 @@ const ModelLoader = () => {
           }
           for (let a = 0; a < 3; a++) {
             if (
-              expectedRVAtPosRef.current[bottom[a]] >
-              expectedRVAtPosRef.current[i]
+              expectedRVAtPos.current[bottom[a]] >
+              expectedRVAtPos.current[i]
             ) {
               let next = i;
               for (let b = a; b < 3; b++) {
@@ -206,7 +220,7 @@ const ModelLoader = () => {
       setPlayers(lineup);
       setExpectedRVAtPos(Array(9).fill(0)); // Reset expected run values
 
-      try {
+
         const modLineup = [...lineup, 0];
         const lineups = [modLineup];
         for (let i = 0; i < 9; i++) {
@@ -220,14 +234,31 @@ const ModelLoader = () => {
           const batch = lineups.slice(i, i + MAX_CONCURRENT_WORKERS);
           await processBatch(batch);
         }
-      } catch (err) {
-        console.error("Error making prediction:", err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
+
+        // Update PrimaryPos and expectedRVAtPrimaryPos based on playerData
+        const primaryPositions = lineup.map((playerId) => {
+          const player = playerData[playerId];
+          if (player) {
+            return player.primary_position;
+          }
+          return '';
+        });
+
+        const primaryValues = lineup.map((playerId) => {
+          const player = playerData[playerId];
+          if (player) {
+            const position = player.primary_position;
+            return parseFloat(player[`${position}_value`]);
+          }
+          return 0;
+        });
+
+        setPrimaryPos(primaryPositions);
+        setExpectedRVAtPrimaryPos(primaryValues);
+
+
     },
-    [processBatch]
+    [processBatch, playerData]
   );
 
   const handlePredictionClick = () => {
@@ -248,6 +279,8 @@ const ModelLoader = () => {
         <p>Resulting Lineup Run Value: {runValue}</p>
         <p>Players: {players.join(", ")}</p>
         <p>Expected RV at Position: {expectedRVAtPos.join(", ")}</p>
+        <p>Expected RV at Primary Position: {expectedRVAtPrimaryPos.join(", ")}</p>
+        <p>Primary Positions: {PrimaryPos.join(", ")}</p>
         <p>Best Players: {bestPlayers.join(", ")}</p>
         <p>Worst Players: {worstPlayers.join(", ")}</p>
       </div>
