@@ -254,6 +254,7 @@ const ModelLoader = () => {
 
         setPrimaryPos(primaryPositions);
         setExpectedRVAtPrimaryPos(primaryValues);
+        setLoading(false);
 
 
     },
