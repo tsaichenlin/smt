@@ -48,7 +48,7 @@ const ModelLoader = () => {
 
       setBattedBallInput(battedBallData.slice(0, total_plays));
       setSituationInput(situationData.slice(0, total_plays));
-      setPositionInput(positionData.slice(0, total_plays));
+      setPositionInput([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
       // Parse CSV data
       const parsedCSV = Papa.parse(playerCSV, { header: true });
@@ -80,7 +80,7 @@ const ModelLoader = () => {
       workerInstance.postMessage({
         battedBallInput: battedBallData.slice(0, total_plays),
         situationInput: situationData.slice(0, total_plays),
-        positionInput: positionData.slice(0, total_plays),
+        positionInput: [1, 2, 3, 4, 5, 6, 7, 8, 9],
         lineup: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       });
 
@@ -160,8 +160,7 @@ const ModelLoader = () => {
       await Promise.all(workerPromises);
 
       if (workersReturned == 10) {
-        console.log("Before the best worst eval", lineups_results);
-        console.log(expectedRVAtPos);
+        console.log("Before the best worst eval", expectedRVAtPos.current);
         let top = [0];
         let bottom = [0];
 
@@ -216,9 +215,9 @@ const ModelLoader = () => {
       runValueReturned.current = false;
       runValueRef.current = null;
       setLoading(true);
-      setResults([]); // Clear previous results
+      setResults([]); 
       setPlayers(lineup);
-      setExpectedRVAtPos(Array(9).fill(0)); // Reset expected run values
+      setExpectedRVAtPos(Array(9).fill(0)); 
 
 
         const modLineup = [...lineup, 0];

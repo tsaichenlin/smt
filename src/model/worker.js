@@ -32,7 +32,7 @@ async function runModel(battedBallInput, situationInput, positionInput, lineup) 
 
   const battedBall = tf.tensor(battedBallInput);
   const situation = tf.tensor(situationInput);
-  const position = tf.tensor(positionInput);
+  const position = tf.tile(tf.tensor1d(positionInput), [battedBallInput.length]).reshape([battedBallInput.length, numFeatures]);
 
   const prediction = model.predict([battedBall, situation, lineups_for_eval, position]);
   const baseArray = await prediction.data();
