@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useEffect, useState, useContext } from "react";
 import { GlobalContext } from "../GlobalContext";
 
@@ -30,6 +30,7 @@ const Div = styled.div`
 const Content = styled.div`
   display: flex;
   position: relative;
+  min-height: 700px;
 `;
 const BgLineContainer = styled.div`
   position: absolute;
@@ -96,6 +97,23 @@ const Img = styled.img`
   margin: 50px;
 `;
 
+const slideIn = keyframes`
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+`;
+
+const slideOut = keyframes`
+ 0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+`;
 const EditPanel = styled.div`
   background-color: var(--blue);
   height: 100%;
@@ -106,6 +124,10 @@ const EditPanel = styled.div`
   z-index: 4;
   padding: 35px;
   box-sizing: border-box;
+  transform: translateX(100%);
+
+  animation: ${({ isShowing }) => (isShowing ? slideOut : slideIn)} 0.8s ease
+    forwards;
 
   &::before {
     content: "Edit Mode";
@@ -139,13 +161,18 @@ function Simulator() {
   const [editMode, setEditMode] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
+  const [isShowing, setIsShowing] = useState(false);
 
   const enterEditMode = () => {
     setEditMode(true);
+    setIsShowing(false);
   };
 
   const exitEditMode = () => {
-    setEditMode(false);
+    setIsShowing(true);
+    setTimeout(() => {
+      setEditMode(false);
+    }, 800);
   };
 
   const handleSearchInput = (e) => {
@@ -163,7 +190,7 @@ function Simulator() {
 
   return (
     <Div>
-      <Nav></Nav>
+      <Nav color="var(--white)"></Nav>
 
       <TeamSection>
         <EditButton onClick={enterEditMode} />
@@ -178,7 +205,7 @@ function Simulator() {
         <PlayerButton name={globalPlayers.Right.name} position="RF" />
       </TeamSection>
       {editMode && (
-        <EditPanel>
+        <EditPanel isShowing={isShowing}>
           <ExitButton onClick={exitEditMode}>&#10005;</ExitButton>
           <h3
             style={{

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 const Container = styled.div`
   display: flex;
@@ -18,6 +18,21 @@ const NavLink = styled(Link)`
   color: var(--white);
   text-decoration: none;
   font-weight: 500;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 1.5px;
+    background-color: var(--hover);
+    transition: width 0.5s ease;
+  }
+  &:hover::after {
+    width: 100%;
+  }
 `;
 
 const Title = styled.h1`
@@ -31,10 +46,16 @@ function Nav(props) {
         <Title style={{ color: props.color }}>Baseball Data</Title>
       </Link>
       <LinkContainer>
-        <NavLink to="/how" style={{ color: props.color }}>
+        <NavLink
+          to="/how"
+          style={{ color: props.color, "--hover": props.color }}
+        >
           How It Works
         </NavLink>
-        <NavLink to="/about" style={{ color: props.color }}>
+        <NavLink
+          to="/about"
+          style={{ color: props.color, "--hover": props.color }}
+        >
           About
         </NavLink>
       </LinkContainer>
