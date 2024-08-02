@@ -23,13 +23,20 @@ const Button = styled.button`
     margin: 0;
     font-size: 15px;
     text-align: left;
+    color: var(--white);
+  }
+  &.clicked {
+    background-color: var(--white);
+    .name {
+      color: var(--red);
+    }
   }
 `;
 
 function PlayerButton(props) {
   return (
-    <Button onClick={props.onClick}>
-      <p style={{ color: "var(--white)" }}>{props.name}</p>
+    <Button onClick={props.onClick} className={props.clicked ? "clicked" : ""}>
+      <p className="name">{props.name}</p>
       <p style={{ color: "var(--blue)" }}>{props.position}</p>
     </Button>
   );

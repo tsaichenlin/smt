@@ -260,46 +260,55 @@ function Simulator() {
           name={globalPlayers.Pitcher.name}
           position="P"
           onClick={() => handlePlayerButton("pitcher")}
+          clicked={selectedPlayer == "pitcher"}
         />
         <PlayerButton
           name={globalPlayers.Catcher.name}
           position="C"
           onClick={() => handlePlayerButton("catcher")}
+          clicked={selectedPlayer == "catcher"}
         />
         <PlayerButton
           name={globalPlayers.First.name}
           position="1B"
           onClick={() => handlePlayerButton("first")}
+          clicked={selectedPlayer == "first"}
         />
         <PlayerButton
           name={globalPlayers.Second.name}
           position="2B"
           onClick={() => handlePlayerButton("second")}
+          clicked={selectedPlayer == "second"}
         />
         <PlayerButton
           name={globalPlayers.Third.name}
           position="3B"
           onClick={() => handlePlayerButton("third")}
+          clicked={selectedPlayer == "third"}
         />
         <PlayerButton
           name={globalPlayers.Shortstop.name}
           position="SS"
           onClick={() => handlePlayerButton("shortstop")}
+          clicked={selectedPlayer == "shortstop"}
         />
         <PlayerButton
           name={globalPlayers.Left.name}
           position="LF"
           onClick={() => handlePlayerButton("left")}
+          clicked={selectedPlayer == "left"}
         />
         <PlayerButton
           name={globalPlayers.Center.name}
           position="CF"
           onClick={() => handlePlayerButton("center")}
+          clicked={selectedPlayer == "center"}
         />
         <PlayerButton
           name={globalPlayers.Right.name}
           position="RF"
           onClick={() => handlePlayerButton("right")}
+          clicked={selectedPlayer == "right"}
         />
       </TeamSection>
       {editMode && (
