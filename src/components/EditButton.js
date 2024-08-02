@@ -8,6 +8,7 @@ const Button = styled.button`
   border: solid 0.5px var(--gray);
   padding: 8px;
   font-size: 15px;
+  cursor: pointer;
 
   &:hover {
     border: solid 0.5px var(--white-border);
@@ -15,7 +16,7 @@ const Button = styled.button`
 `;
 
 function EditButton(props) {
-  return <Button onClick={props.onClick}>Edit Players</Button>;
+  return <Button onClick={props.onClick}>Edit All Players</Button>;
 }
 
 export default EditButton;

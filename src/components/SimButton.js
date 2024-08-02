@@ -31,6 +31,7 @@ const Button = styled.button`
   padding: 6px;
   font-size: 15px;
   position: relative;
+  cursor: pointer;
 
   &:hover {
     border: solid 0.5px var(--white);

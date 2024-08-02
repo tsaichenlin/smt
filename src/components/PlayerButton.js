@@ -8,6 +8,7 @@ const Button = styled.button`
   padding: 0px 20px;
   font-size: 16px;
   border: none;
+  cursor: pointer;
 
   display: flex;
   justify-content: space-between;
@@ -27,7 +28,7 @@ const Button = styled.button`
 
 function PlayerButton(props) {
   return (
-    <Button>
+    <Button onClick={props.onClick}>
       <p style={{ color: "var(--white)" }}>{props.name}</p>
       <p style={{ color: "var(--blue)" }}>{props.position}</p>
     </Button>

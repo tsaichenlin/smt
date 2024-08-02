@@ -4,7 +4,7 @@ import { GlobalContext } from "../GlobalContext";
 
 import Nav from "../components/Nav";
 import SimButton from "../components/SimButton";
-import fullField from "../images/fullField.png";
+import FieldSVG from "../images/fieldSVG.js";
 import EditButton from "../components/EditButton";
 import PlayerButton from "../components/PlayerButton";
 
@@ -31,6 +31,7 @@ const Content = styled.div`
   display: flex;
   position: relative;
   min-height: 700px;
+  box-sizing: border-box;
 `;
 const BgLineContainer = styled.div`
   position: absolute;
@@ -89,12 +90,24 @@ const Left = styled(Right)`
   box-sizing: border-box;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  overflow: hidden;
 `;
 
-const Img = styled.img`
-  width: 500px;
-  width: 80%;
-  margin: 50px;
+const ImgContainer = styled.div`
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20px;
+  box-sizing: border-box;
+`;
+
+const FieldZoom = styled(FieldSVG)`
+  transform: scale(1);
+  transform-origin: center bottom;
+  width: 100%;
+  height: 100%;
 `;
 
 const slideIn = keyframes`
@@ -126,11 +139,11 @@ const EditPanel = styled.div`
   box-sizing: border-box;
   transform: translateX(100%);
 
-  animation: ${({ isShowing }) => (isShowing ? slideOut : slideIn)} 0.8s ease
+  animation: ${({ isShowing }) => (isShowing ? slideOut : slideIn)} 0.6s ease
     forwards;
 
   &::before {
-    content: "Edit Mode";
+    content: "${({ title }) => title}";
     color: var(--white);
     text-align: top;
     position: absolute;
@@ -151,42 +164,91 @@ const ExitButton = styled.div`
   cursor: pointer;
 `;
 
-const SearchSection = styled.div`
+const Section = styled.div`
   height: 90%;
   margin-left: 80px;
   overflow: hidden;
 `;
 
 function Simulator() {
-  const [editMode, setEditMode] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
+  const { editMode, setEditMode } = useContext(GlobalContext);
+  const { editPlayerMode, setEditPlayerMode } = useContext(GlobalContext);
+  const { selectedPlayer, setSelectedPlayer } = useContext(GlobalContext);
+
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
-  const [isShowing, setIsShowing] = useState(false);
+  const { svgController, setSvgController } = useContext(GlobalContext);
+
+  const { isShowing, setIsShowing } = useContext(GlobalContext);
 
   const enterEditMode = () => {
-    setEditMode(true);
-    setIsShowing(false);
-  };
-
-  const exitEditMode = () => {
-    setIsShowing(true);
-    setTimeout(() => {
-      setEditMode(false);
-    }, 800);
-  };
-
-  const handleSearchInput = (e) => {
-    if (e.key === "Enter") {
-      console.log(searchInput);
+    if (editMode) {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditMode(false);
+      }, 600);
+    } else {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditPlayerMode(false);
+        setSelectedPlayer("");
+        setEditMode(true);
+        setIsShowing(false);
+      }, 600);
     }
   };
 
-  const handleSearchInputChange = (e) => {
-    setSearchInput(e.target.value);
+  const exitEditMode = () => {
+    if (editMode) {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditMode(false);
+      }, 600);
+    } else if (editPlayerMode) {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditPlayerMode(false);
+        setSelectedPlayer("");
+      }, 600);
+    }
   };
-  useEffect(() => {
-    console.log(editMode);
-  }, [editMode]);
+  const handleStarButton = () => {
+    if (editPlayerMode && selectedPlayer == "") {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditPlayerMode(false);
+      }, 600);
+    } else {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditMode(false);
+        setEditPlayerMode(true);
+        setIsShowing(false);
+      }, 600);
+    }
+  };
+
+  const handlePlayerButton = (pos) => {
+    console.log(selectedPlayer + pos);
+    if (editPlayerMode) {
+      if (selectedPlayer == pos) {
+        setIsShowing(true);
+        setTimeout(() => {
+          setSelectedPlayer("");
+          setEditPlayerMode(false);
+        }, 600);
+      } else {
+        setSelectedPlayer(pos);
+      }
+    } else {
+      setIsShowing(true);
+      setTimeout(() => {
+        setEditMode(false);
+        setEditPlayerMode(true);
+        setSelectedPlayer(pos);
+        setIsShowing(false);
+      }, 600);
+    }
+  };
 
   return (
     <Div>
@@ -194,38 +256,89 @@ function Simulator() {
 
       <TeamSection>
         <EditButton onClick={enterEditMode} />
-        <PlayerButton name={globalPlayers.Pitcher.name} position="P" />
-        <PlayerButton name={globalPlayers.Catcher.name} position="C" />
-        <PlayerButton name={globalPlayers.First.name} position="1B" />
-        <PlayerButton name={globalPlayers.Second.name} position="2B" />
-        <PlayerButton name={globalPlayers.Third.name} position="3B" />
-        <PlayerButton name={globalPlayers.Shortstop.name} position="SS" />
-        <PlayerButton name={globalPlayers.Left.name} position="LF" />
-        <PlayerButton name={globalPlayers.Center.name} position="CF" />
-        <PlayerButton name={globalPlayers.Right.name} position="RF" />
+        <PlayerButton
+          name={globalPlayers.Pitcher.name}
+          position="P"
+          onClick={() => handlePlayerButton("pitcher")}
+        />
+        <PlayerButton
+          name={globalPlayers.Catcher.name}
+          position="C"
+          onClick={() => handlePlayerButton("catcher")}
+        />
+        <PlayerButton
+          name={globalPlayers.First.name}
+          position="1B"
+          onClick={() => handlePlayerButton("first")}
+        />
+        <PlayerButton
+          name={globalPlayers.Second.name}
+          position="2B"
+          onClick={() => handlePlayerButton("second")}
+        />
+        <PlayerButton
+          name={globalPlayers.Third.name}
+          position="3B"
+          onClick={() => handlePlayerButton("third")}
+        />
+        <PlayerButton
+          name={globalPlayers.Shortstop.name}
+          position="SS"
+          onClick={() => handlePlayerButton("shortstop")}
+        />
+        <PlayerButton
+          name={globalPlayers.Left.name}
+          position="LF"
+          onClick={() => handlePlayerButton("left")}
+        />
+        <PlayerButton
+          name={globalPlayers.Center.name}
+          position="CF"
+          onClick={() => handlePlayerButton("center")}
+        />
+        <PlayerButton
+          name={globalPlayers.Right.name}
+          position="RF"
+          onClick={() => handlePlayerButton("right")}
+        />
       </TeamSection>
       {editMode && (
-        <EditPanel isShowing={isShowing}>
+        <EditPanel isShowing={isShowing} title="Edit Mode">
           <ExitButton onClick={exitEditMode}>&#10005;</ExitButton>
-          <h3
-            style={{
-              color: "var(--white)",
-              textAlign: "right",
-              fontWeight: "normal",
-              marginTop: "10px",
-            }}
-          >
-            Create Your Lineup
-          </h3>
-          <SearchSection>
+          {!editPlayerMode && (
+            <h3
+              style={{
+                color: "var(--white)",
+                textAlign: "right",
+                fontWeight: "normal",
+                marginTop: "10px",
+              }}
+            >
+              Create Your Lineup
+            </h3>
+          )}
+          <Section>
             <CsvReader></CsvReader>
-          </SearchSection>
+          </Section>
+        </EditPanel>
+      )}
+      {editPlayerMode && (
+        <EditPanel isShowing={isShowing} title="Player Info">
+          <ExitButton onClick={exitEditMode}>&#10005;</ExitButton>
+
+          <Section>
+            <h1>{selectedPlayer == "." ? "" : selectedPlayer}</h1>
+            <p>info here</p>
+          </Section>
         </EditPanel>
       )}
 
       <Content>
         <Left>
-          <Img src={fullField}></Img>
+          <ImgContainer>
+            <FieldZoom />
+          </ImgContainer>
+
           <SimButton></SimButton>
           <div>
             <p style={{ color: "var(--blue)" }}>

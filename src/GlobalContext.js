@@ -14,9 +14,38 @@ export const GlobalProvider = ({ children }) => {
     Center: { name: "...", id: "" },
     Right: { name: "...", id: "" },
   });
-
+  const [svgController, setSvgController] = useState({
+    pitcher: false,
+    catcher: false,
+    first: false,
+    second: false,
+    thrid: false,
+    shortstop: false,
+    left: false,
+    right: false,
+    center: false,
+  });
+  const [selectedPlayer, setSelectedPlayer] = useState("");
+  const [isShowing, setIsShowing] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editPlayerMode, setEditPlayerMode] = useState(false);
   return (
-    <GlobalContext.Provider value={{ globalPlayers, setGlobalPlayers }}>
+    <GlobalContext.Provider
+      value={{
+        globalPlayers,
+        setGlobalPlayers,
+        svgController,
+        setSvgController,
+        selectedPlayer,
+        setSelectedPlayer,
+        isShowing,
+        setIsShowing,
+        editMode,
+        setEditMode,
+        editPlayerMode,
+        setEditPlayerMode,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );

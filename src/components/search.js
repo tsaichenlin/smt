@@ -5,7 +5,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import SearchCard from "./SearchCard";
 
 const SearchBar = styled.input`
-  width: 90%;
+  width: 100%;
   padding: 10px 20px;
   box-sizing: border-box;
   border: solid var(--white) 1px;
