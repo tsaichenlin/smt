@@ -29,6 +29,7 @@ export const GlobalProvider = ({ children }) => {
   const [isShowing, setIsShowing] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editPlayerMode, setEditPlayerMode] = useState(false);
+  const [isPopup, setIsPopup] = useState(false);
   return (
     <GlobalContext.Provider
       value={{
@@ -44,6 +45,8 @@ export const GlobalProvider = ({ children }) => {
         setEditMode,
         editPlayerMode,
         setEditPlayerMode,
+        isPopup,
+        setIsPopup,
       }}
     >
       {children}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import fullField from "../images/fullField.png";
+import { useContext } from "react";
+import { GlobalContext } from "../GlobalContext";
 const Container = styled.div`
   display: flex;
   width: 100vw;
@@ -31,12 +32,16 @@ const StartButton = styled(Link)`
 `;
 
 function Start() {
+  const { setIsPopup } = useContext(GlobalContext);
+  const handleStart = () => {
+    setIsPopup(true);
+  };
   return (
     <Container id="start-container">
       <h1>
         Welcome to <span>Baseball Data</span>
       </h1>
-      <StartButton id="start-button" to="/sim">
+      <StartButton onClick={handleStart} id="start-button" to="/sim">
         Get Started!
       </StartButton>
     </Container>

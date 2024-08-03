@@ -71,7 +71,7 @@ const TeamSection = styled.div`
   position: absolute;
   right: 50%;
   transform: translate(50%, 20px);
-  z-index: 5;
+  z-index: 4;
 
   display: flex;
   flex-direction: column;
@@ -134,7 +134,7 @@ const EditPanel = styled.div`
   position: absolute;
   right: 0;
   top: 0;
-  z-index: 4;
+  z-index: 3;
   padding: 35px;
   box-sizing: border-box;
   transform: translateX(100%);
@@ -170,15 +170,36 @@ const Section = styled.div`
   overflow: hidden;
 `;
 
+const PopupDiv = styled.div`
+  position: absolute;
+  z-index: 5;
+  background-color: var(--popup-color);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const PopupCard = styled.div`
+  position: relative;
+  background-color: var(--white);
+  width: 40vw;
+  height: 40vh;
+  z-index: 6;
+  padding: 20px;
+  min-width: 400px;
+  min-height: 250px;
+  max-width: 700px;
+  box-sizing: border-box;
+`;
+
 function Simulator() {
   const { editMode, setEditMode } = useContext(GlobalContext);
   const { editPlayerMode, setEditPlayerMode } = useContext(GlobalContext);
   const { selectedPlayer, setSelectedPlayer } = useContext(GlobalContext);
-
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
-  const { svgController, setSvgController } = useContext(GlobalContext);
-
   const { isShowing, setIsShowing } = useContext(GlobalContext);
+  const { isPopup, setIsPopup } = useContext(GlobalContext);
 
   const enterEditMode = () => {
     if (editMode) {
@@ -249,11 +270,41 @@ function Simulator() {
       }, 600);
     }
   };
+  const handlePopup = () => {
+    setIsPopup(!isPopup);
+  };
 
   return (
     <Div>
-      <Nav color="var(--white)"></Nav>
+      {isPopup && (
+        <PopupDiv>
+          <PopupCard onClick={handlePopup}>
+            <ExitButton onClick={handlePopup} style={{ color: "var(--blue)" }}>
+              &#10005;
+            </ExitButton>
+            <h2
+              style={{
+                color: "var(--gray)",
+                textAlign: "center",
+                margin: "0",
+              }}
+            >
+              Welcome to
+            </h2>
+            <h1
+              style={{ color: "var(--blue)", textAlign: "center", margin: "0" }}
+            >
+              Baseball Data
+            </h1>
+            <p style={{ textAlign: "center", color: "var(--gray)" }}>
+              Tutorial gif here plus description, i wil style this better once i
+              add gif
+            </p>
+          </PopupCard>
+        </PopupDiv>
+      )}
 
+      <Nav color="var(--white)"></Nav>
       <TeamSection>
         <EditButton onClick={enterEditMode} />
         <PlayerButton
