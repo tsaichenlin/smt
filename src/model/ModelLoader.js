@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import Papa from "papaparse";
 
 const MAX_CONCURRENT_WORKERS = 2;
-const total_plays = 10; //3890
+const total_plays = 3890; //3890
 var lineups_results = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const ModelLoader = () => {
@@ -41,7 +41,7 @@ const ModelLoader = () => {
         fetch("./Database/position_Input.json").then((response) =>
           response.json()
         ),
-        fetch("./Database/player_database_all_pos.csv").then((response) =>
+        fetch("./Database/player_database_all.csv").then((response) =>
           response.text()
         ),
       ]);
@@ -67,23 +67,8 @@ const ModelLoader = () => {
         workers.current.push(worker);
       }
 
-      const workerInstance = new Worker(new URL("./worker.js", import.meta.url)); // Update path to worker script
-      workerInstance.onmessage = (e) => {
-        setBaseRV(e.data.result);
-        workerInstance.terminate();
-      };
-      workerInstance.onerror = (err) => {
-        console.error("Error in worker:", err);
-        setError(err);
-        workerInstance.terminate();
-      };
-      workerInstance.postMessage({
-        battedBallInput: battedBallData.slice(0, total_plays),
-        situationInput: situationData.slice(0, total_plays),
-        positionInput: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        lineup: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-      });
 
+      setBaseRV(4574.947267591953);
       setError(null);
       setPlayerData(playerData); // Update playerData state
       console.log("Data fetched");

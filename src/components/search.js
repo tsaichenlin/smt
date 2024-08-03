@@ -65,7 +65,7 @@ const CsvReader = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/database/player_database.csv");
+        const response = await fetch("/database/player_database_all.csv");
         const reader = response.body.getReader();
         const result = await reader.read();
         const decoder = new TextDecoder("utf-8");
