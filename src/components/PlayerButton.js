@@ -5,7 +5,7 @@ const Button = styled.button`
   height: 50px;
   background-color: var(--gray);
   font-weight: 800;
-  padding: 0px 20px;
+  padding: 0px 15px;
   font-size: 16px;
   border: none;
   cursor: pointer;
@@ -25,6 +25,16 @@ const Button = styled.button`
     text-align: left;
     color: var(--white);
   }
+  h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 15px;
+    text-align: left;
+    color: var(--white);
+    width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
   &.clicked {
     background-color: var(--white);
     .name {
@@ -36,7 +46,7 @@ const Button = styled.button`
 function PlayerButton(props) {
   return (
     <Button onClick={props.onClick} className={props.clicked ? "clicked" : ""}>
-      <p className="name">{props.name}</p>
+      <h1 className="name">{props.name}</h1>
       <p style={{ color: "var(--blue)" }}>{props.position}</p>
     </Button>
   );

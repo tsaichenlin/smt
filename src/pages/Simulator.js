@@ -7,6 +7,8 @@ import SimButton from "../components/SimButton";
 import FieldSVG from "../images/fieldSVG.js";
 import EditButton from "../components/EditButton";
 import PlayerButton from "../components/PlayerButton";
+import Report from "../components/Report.js";
+import PlayerInfoCard from "../components/PlayerInfoCard.js";
 
 import CsvReader from "../components/search";
 
@@ -14,36 +16,39 @@ const Div = styled.div`
   position: relative;
   height: 100%;
   min-height: 100vh;
-  overflow: hidden;
   &::before {
     content: "";
     background-color: var(--dark-gray);
     height: 100%;
-    width: 50%;
+    width: 55%;
     position: absolute;
     right: 0;
     top: 0;
     z-index: -1;
   }
+  overflow: hidden;
 `;
 
 const Content = styled.div`
   display: flex;
   position: relative;
-  min-height: 700px;
+  min-height: 680px;
   box-sizing: border-box;
 `;
 const BgLineContainer = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
-  top: 50px;
-  height: calc(100%-50px);
-  width: 50%;
-  z-index: -1;
+  top: 60px;
+  height: calc(100% - 60px);
+  width: 55%;
+  z-index: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-left: 25px;
+  box-sizing: border-box;
+  overflow: auto;
 `;
 const BgLine = styled.div`
   border: solid 1px var(--gray);
@@ -54,7 +59,6 @@ const BgLine = styled.div`
   position: relative;
   top: 0;
   right: 0;
-  overflow: hidden;
 
   &::before {
     content: "";
@@ -69,7 +73,7 @@ const BgLine = styled.div`
 
 const TeamSection = styled.div`
   position: absolute;
-  right: 50%;
+  right: 55%;
   transform: translate(50%, 20px);
   z-index: 4;
 
@@ -79,14 +83,11 @@ const TeamSection = styled.div`
   padding-top: 20px;
 `;
 
-const Right = styled.div`
-  width: 50%;
-`;
-
-const Left = styled(Right)`
+const Left = styled.div`
+  width: 45%;
   display: flex;
   align-items: center;
-  padding-right: 8vw;
+  padding-right: 85px;
   box-sizing: border-box;
   flex-direction: column;
   justify-content: center;
@@ -99,7 +100,7 @@ const ImgContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 20px;
+  padding: 0 20px;
   box-sizing: border-box;
 `;
 
@@ -130,7 +131,7 @@ const slideOut = keyframes`
 const EditPanel = styled.div`
   background-color: var(--blue);
   height: 100%;
-  width: 50%;
+  width: 55%;
   position: absolute;
   right: 0;
   top: 0;
@@ -193,6 +194,44 @@ const PopupCard = styled.div`
   box-sizing: border-box;
 `;
 
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--dark-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  color: var(--white);
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 35px;
+    opacity: 0.3;
+    padding-top: 20px;
+    margin: 0;
+    padding-top: 10px;
+  }
+  p {
+    font-size: 22px;
+    opacity: 0.7;
+    margin: 0;
+  }
+  i {
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    font-size: 40px;
+    color: var(--white);
+    opacity: 0.3;
+    transition: scale 0.3s ease;
+  }
+`;
+
 function Simulator() {
   const { editMode, setEditMode } = useContext(GlobalContext);
   const { editPlayerMode, setEditPlayerMode } = useContext(GlobalContext);
@@ -200,6 +239,11 @@ function Simulator() {
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
   const { isShowing, setIsShowing } = useContext(GlobalContext);
   const { isPopup, setIsPopup } = useContext(GlobalContext);
+
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   const enterEditMode = () => {
     if (editMode) {
@@ -249,7 +293,7 @@ function Simulator() {
   };
 
   const handlePlayerButton = (pos) => {
-    console.log(selectedPlayer + pos);
+    pos = pos.charAt(0).toUpperCase() + pos.slice(1);
     if (editPlayerMode) {
       if (selectedPlayer == pos) {
         setIsShowing(true);
@@ -261,11 +305,11 @@ function Simulator() {
         setSelectedPlayer(pos);
       }
     } else {
+      setSelectedPlayer(pos);
       setIsShowing(true);
       setTimeout(() => {
         setEditMode(false);
         setEditPlayerMode(true);
-        setSelectedPlayer(pos);
         setIsShowing(false);
       }, 600);
     }
@@ -274,8 +318,52 @@ function Simulator() {
     setIsPopup(!isPopup);
   };
 
+  const handleSim = () => {
+    const missingPos = [];
+
+    for (let position in globalPlayers) {
+      if (globalPlayers[position].name == "...") {
+        missingPos.push(position);
+      }
+    }
+    console.log("missing pos" + missingPos);
+
+    if (missingPos.length > 0) {
+      const confirmation = window.confirm(
+        `Some positions are empty, would you like to fill these positions with average player?`
+      );
+      if (confirmation) {
+        console.log("avg player fill");
+      } else {
+        console.log("denied avg player fill");
+      }
+    } else {
+      console.log("All players set");
+    }
+  };
+
+  const handleResize = () => {
+    setWindowSize({
+      width: "1000px",
+      height: window.innerHeight,
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <Div>
+      {window.innerWidth < 900 && (
+        <Overlay>
+          <i class="fa-solid fa-expand"></i>
+          <h1>Who's on First?</h1>
+          <p>Please expand your browser window to use application.</p>
+        </Overlay>
+      )}
+
       {isPopup && (
         <PopupDiv>
           <PopupCard onClick={handlePopup}>
@@ -292,10 +380,16 @@ function Simulator() {
               Welcome to
             </h2>
             <h1
-              style={{ color: "var(--blue)", textAlign: "center", margin: "0" }}
+              style={{ color: "var(--red)", textAlign: "center", margin: "0" }}
             >
-              Baseball Data
+              Who's on First?
             </h1>
+            <h4
+              style={{ color: "var(--gray)", textAlign: "center", margin: "0" }}
+            >
+              {" "}
+              A Baseball Simulator
+            </h4>
             <p style={{ textAlign: "center", color: "var(--gray)" }}>
               Tutorial gif here plus description, i wil style this better once i
               add gif
@@ -304,7 +398,7 @@ function Simulator() {
         </PopupDiv>
       )}
 
-      <Nav color="var(--white)"></Nav>
+      <Nav color="var(--white)" tutorial={true}></Nav>
       <TeamSection>
         <EditButton onClick={enterEditMode} />
         <PlayerButton
@@ -387,8 +481,7 @@ function Simulator() {
           <ExitButton onClick={exitEditMode}>&#10005;</ExitButton>
 
           <Section>
-            <h1>{selectedPlayer == "." ? "" : selectedPlayer}</h1>
-            <p>info here</p>
+            <PlayerInfoCard />
           </Section>
         </EditPanel>
       )}
@@ -399,18 +492,24 @@ function Simulator() {
             <FieldZoom />
           </ImgContainer>
 
-          <SimButton></SimButton>
+          <SimButton onClick={handleSim}></SimButton>
           <div>
-            <p style={{ color: "var(--blue)" }}>
+            <p
+              style={{
+                color: "var(--blue)",
+                textAlign: "center",
+                margin: "15px 5px",
+              }}
+            >
               Select Players and Simulate the Play.
             </p>
           </div>
         </Left>
-
-        <Right></Right>
       </Content>
       <BgLineContainer>
-        <BgLine></BgLine>
+        <BgLine>
+          <Report></Report>
+        </BgLine>
       </BgLineContainer>
     </Div>
   );
