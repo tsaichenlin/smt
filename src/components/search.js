@@ -78,7 +78,7 @@ const CsvReader = () => {
               return row;
             });
             setData(results.data);
-            setFilteredData(results.data); // Initialize filtered data
+            setFilteredData(results.data);
             setError(null);
           },
           error: (err) => {
@@ -116,7 +116,6 @@ const CsvReader = () => {
   const handleSearch = (searchQuery) => {
     searchQuery = searchQuery.toLowerCase();
     if (!searchQuery) {
-      // If no input is provided, return the original data
       setFilteredData(data);
       return;
     }
