@@ -112,7 +112,7 @@ function Report() {
         </Table>
         <ScrollSection>
           <Table>
-            <thead>
+            <thead style={{ background: "var(--gray)" }}>
               <Th>Player</Th>
               <Th>Position</Th>
               <Th>Expected RV</Th>

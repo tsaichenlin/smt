@@ -194,6 +194,44 @@ const PopupCard = styled.div`
   box-sizing: border-box;
 `;
 
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--dark-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  color: var(--white);
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 35px;
+    opacity: 0.3;
+    padding-top: 20px;
+    margin: 0;
+    padding-top: 10px;
+  }
+  p {
+    font-size: 22px;
+    opacity: 0.7;
+    margin: 0;
+  }
+  i {
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    font-size: 40px;
+    color: var(--white);
+    opacity: 0.3;
+    transition: scale 0.3s ease;
+  }
+`;
+
 function Simulator() {
   const { editMode, setEditMode } = useContext(GlobalContext);
   const { editPlayerMode, setEditPlayerMode } = useContext(GlobalContext);
@@ -201,6 +239,11 @@ function Simulator() {
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
   const { isShowing, setIsShowing } = useContext(GlobalContext);
   const { isPopup, setIsPopup } = useContext(GlobalContext);
+
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   const enterEditMode = () => {
     if (editMode) {
@@ -299,8 +342,28 @@ function Simulator() {
     }
   };
 
+  const handleResize = () => {
+    setWindowSize({
+      width: "1000px",
+      height: window.innerHeight,
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <Div>
+      {window.innerWidth < 900 && (
+        <Overlay>
+          <i class="fa-solid fa-expand"></i>
+          <h1>Who's on First?</h1>
+          <p>Please expand your browser window to use application.</p>
+        </Overlay>
+      )}
+
       {isPopup && (
         <PopupDiv>
           <PopupCard onClick={handlePopup}>
@@ -431,7 +494,13 @@ function Simulator() {
 
           <SimButton onClick={handleSim}></SimButton>
           <div>
-            <p style={{ color: "var(--blue)" }}>
+            <p
+              style={{
+                color: "var(--blue)",
+                textAlign: "center",
+                margin: "15px 5px",
+              }}
+            >
               Select Players and Simulate the Play.
             </p>
           </div>
