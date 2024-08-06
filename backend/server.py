@@ -10,7 +10,7 @@ class WeightedAverageLayer(tf.keras.layers.Layer):
 
     def build(self, input_shape):
         # Initialize the trainable weights for the weighted average
-        self.kernel = self.add_weight(shape=(input_shape[-1],),
+        self.kernel = self.add_weight(shape=(input_shape[1],),
                                       initializer='random_normal',
                                       trainable=True)
         # A small value added to weights to avoid division by zero
@@ -18,8 +18,14 @@ class WeightedAverageLayer(tf.keras.layers.Layer):
 
     def call(self, inputs):
         # Compute the weighted sum
-        shortened_inputs = inputs[:, -9:]
-        weighted_sum = tf.reduce_sum(shortened_inputs * self.kernel, axis=1)
+
+        zero_col = tf.zeros_like(inputs[:, :, :1])
+        inputs = tf.concat([zero_col, inputs[:, :, 1:]], axis=-1)
+
+        inputs = tf.transpose(inputs, perm=[0, 2, 1])
+        inputs = inputs * self.kernel
+        inputs = tf.transpose(inputs, perm=[0, 2, 1])
+        weighted_sum = tf.reduce_sum(inputs, axis=1)
         # Compute the sum of weights
         weights_sum = tf.reduce_sum(self.kernel) + self.epsilon
         # Calculate the weighted average
@@ -33,7 +39,7 @@ print("start")
 batted_bal = json.load(open('./data/batted_ball_Input.json'))
 situation = json.load(open('./data/situation_Input.json'))
 print('json loaded')
-model = tf.keras.models.load_model('./model/saved_model_SitEmb_input0_refined (1).keras', custom_objects={'WeightedAverageLayer': WeightedAverageLayer})
+model = tf.keras.models.load_model('./model/saved_model_SitEmb_input0_refined (2).keras', custom_objects={'WeightedAverageLayer': WeightedAverageLayer})
 lineup = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 lineup = np.tile(np.array(lineup), (3890, 1))
 
