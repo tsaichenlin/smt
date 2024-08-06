@@ -17,7 +17,7 @@ const StartButton = styled(Link)`
 
   background-color: var(--white);
   border: none;
-  color: vaR(--red);
+  color: var(--red);
 
   text-align: center;
   text-decoration: none;
@@ -30,7 +30,19 @@ const StartButton = styled(Link)`
     color: var(--white);
   }
 `;
-
+const Title = styled.h1`
+  font-weight: 700;
+  font-size: 50px;
+  margin: 0;
+  color: var(--red);
+`;
+const SubTitle = styled.h2`
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--white);
+  margin-bottom: 40px;
+  margin-top: 0px;
+`;
 function Start() {
   const { setIsPopup } = useContext(GlobalContext);
   const handleStart = () => {
@@ -38,11 +50,10 @@ function Start() {
   };
   return (
     <Container id="start-container">
-      <h1>
-        Welcome to <span>Baseball Data</span>
-      </h1>
+      <Title>Who's on First?</Title>
+      <SubTitle>A Baseball Simulator</SubTitle>
       <StartButton onClick={handleStart} id="start-button" to="/sim">
-        Get Started!
+        Enter
       </StartButton>
     </Container>
   );

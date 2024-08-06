@@ -98,11 +98,20 @@ function SearchCard({ player }) {
       return positions
         .replace(/\[|\]|'/g, "")
         .split(", ")
+        .map((position) =>
+          position
+            .split("_")
+            .map(
+              (word) => word.charAt(0).toUpperCase() + word.slice(1) // Capitalize each word
+            )
+            .join(" ")
+        )
         .join(", ");
     } else {
       return "None";
     }
   };
+
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
@@ -117,7 +126,14 @@ function SearchCard({ player }) {
       [position]: { name: playerName, id: player.player_id },
     }));
   };
-
+  const formatPrimary = (pos) => {
+    if (typeof pos === "string") {
+      return pos
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+        .join(" ");
+    }
+  };
   return (
     <Card>
       <Photo src={photoPlaceHolder}></Photo>
@@ -125,10 +141,9 @@ function SearchCard({ player }) {
         <Name>{player.first_name + " " + player.last_name}</Name>
         <Info>{"ID: " + player.player_id}</Info>
         <Info>{"Level: " + player.level}</Info>
-        <Info>{"Primary Position: " + player.primary_position}</Info>
+        <Info>{"Primary: " + formatPrimary(player.primary_position)}</Info>
         <Info>
-          {"Secondary Position: " +
-            generateSecondary(player.secondary_position)}
+          {"Secondary: " + generateSecondary(player.secondary_position)}
         </Info>
         <Info>{"Run Value: " + Math.round(player.run_value * 100) / 100}</Info>
       </InfoDiv>
@@ -155,9 +170,3 @@ function SearchCard({ player }) {
 }
 
 export default SearchCard;
-
-/* <h2>{player.player_id}</h2>
-      <h2>{player.level}</h2>
-      <h2>{player.primary_position}</h2>
-      <h2>{player.secondary_position}</h2>
-      <h2>{player.run_value}</h2>*/

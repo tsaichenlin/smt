@@ -3,6 +3,7 @@ import { createContext, useState } from "react";
 export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
+  //Lineup
   const [globalPlayers, setGlobalPlayers] = useState({
     Pitcher: { name: "...", id: "" },
     Catcher: { name: "...", id: "" },
@@ -14,29 +15,22 @@ export const GlobalProvider = ({ children }) => {
     Center: { name: "...", id: "" },
     Right: { name: "...", id: "" },
   });
-  const [svgController, setSvgController] = useState({
-    pitcher: false,
-    catcher: false,
-    first: false,
-    second: false,
-    thrid: false,
-    shortstop: false,
-    left: false,
-    right: false,
-    center: false,
-  });
+
+  //Navigation Helpers
   const [selectedPlayer, setSelectedPlayer] = useState("");
   const [isShowing, setIsShowing] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editPlayerMode, setEditPlayerMode] = useState(false);
   const [isPopup, setIsPopup] = useState(false);
+
+  //Model
+  const [loading, setLoading] = useState(false);
+
   return (
     <GlobalContext.Provider
       value={{
         globalPlayers,
         setGlobalPlayers,
-        svgController,
-        setSvgController,
         selectedPlayer,
         setSelectedPlayer,
         isShowing,
@@ -47,6 +41,8 @@ export const GlobalProvider = ({ children }) => {
         setEditPlayerMode,
         isPopup,
         setIsPopup,
+        loading,
+        setLoading,
       }}
     >
       {children}

@@ -55,15 +55,19 @@ const Button = styled.button`
   }
 `;
 
-function SimButton() {
+function SimButton({ onClick }) {
   const [isFlashing, setIsFlashing] = useState(false);
-
+  /*
   const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
     setIsFlashing(true);
     setTimeout(() => setIsFlashing(false), 5000);
   };
+*/
   return (
-    <Button className={isFlashing ? "flashing" : ""} onClick={handleClick}>
+    <Button className={isFlashing ? "flashing" : ""} onClick={onClick}>
       Simulate
     </Button>
   );

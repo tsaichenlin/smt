@@ -15,6 +15,8 @@ const LinkContainer = styled(Container)`
   margin: 0px;
   gap: 20px;
   font-weight: 600;
+  displau: flex;
+  align-items: center;
 `;
 
 const NavLink = styled(Link)`
@@ -46,6 +48,7 @@ const Title = styled.h1`
   margin-right: 14px;
   font-size: 35px;
   white-space: nowrap;
+  margin-bottom: 0;
 `;
 
 const HowIcon = styled.div`
@@ -56,6 +59,7 @@ const HowIcon = styled.div`
   cursor: pointer;
   box-sizing: border-box;
   position: relative;
+  visibility: hidden;
 
   &::after {
     content: "";
@@ -70,18 +74,29 @@ const HowIcon = styled.div`
   &:hover::after {
     width: 100%;
   }
+  &.show {
+    visibility: visible;
+  }
 `;
-
+const P = styled.p`
+  color: var(--blue);
+  font-weight: 500;
+  margin: 0;
+  font-size: 20px;
+`;
 function Nav(props) {
-  const { isPopup, setIsPopup } = useContext(GlobalContext);
+  const { setIsPopup } = useContext(GlobalContext);
   return (
     <Container>
-      <Link to="/sim" style={{ textDecoration: "none" }}>
-        <Title style={{ color: props.color }}>Baseball Data</Title>
-      </Link>
-
+      <div>
+        <Link to="/sim" style={{ textDecoration: "none" }}>
+          <Title style={{ color: props.color }}>Who's on First?</Title>
+        </Link>
+        <P>Baseball Simulator</P>
+      </div>
       <LinkContainer>
         <HowIcon
+          className={props.tutorial ? "show" : ""}
           style={{ color: "var(--blue)" }}
           onClick={() => {
             setIsPopup(true);
@@ -95,15 +110,15 @@ function Nav(props) {
         >
           How It Works
         </NavLink>
-        <NavLink
-          to="/about"
-          style={{ color: props.color, "--hover": props.color }}
-        >
-          About
-        </NavLink>
       </LinkContainer>
     </Container>
   );
 }
 
 export default Nav;
+/*  <NavLink
+          to="/about"
+          style={{ color: props.color, "--hover": props.color }}
+        >
+          About
+        </NavLink>*/
