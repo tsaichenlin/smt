@@ -25,8 +25,8 @@ export const GlobalProvider = ({ children }) => {
 
   //Model
   const [loading, setLoading] = useState(false);
-  const [responce, setresponce] = useState("");
-  const [data, setdata] = useState("");
+  const [response, setResponse] = useState("");
+  const [data, setData] = useState("");
   const [startSim, setStartSim] = useState(false);
   return (
     <GlobalContext.Provider
@@ -45,10 +45,10 @@ export const GlobalProvider = ({ children }) => {
         setIsPopup,
         loading,
         setLoading,
-        responce,
-        setresponce,
+        response,
+        setResponse,
         data,
-        setdata,
+        setData,
         startSim,
         setStartSim,
       }}

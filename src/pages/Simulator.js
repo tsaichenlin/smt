@@ -11,6 +11,7 @@ import Report from "../components/Report.js";
 import PlayerInfoCard from "../components/PlayerInfoCard.js";
 
 import CsvReader from "../components/search";
+import { runSimulation } from "../components/BackendConnector.js";
 
 const Div = styled.div`
   position: relative;
@@ -239,8 +240,8 @@ function Simulator() {
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
   const { isShowing, setIsShowing } = useContext(GlobalContext);
   const { isPopup, setIsPopup } = useContext(GlobalContext);
-  const { data, setdata } = useContext(GlobalContext);
-  const { response } = useContext(GlobalContext);
+  const { data, setData } = useContext(GlobalContext);
+  const { response, setResponse } = useContext(GlobalContext);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -321,7 +322,23 @@ function Simulator() {
   };
 
   const generateID = () => {
-    return Object.values(globalPlayers).map((player) => player.id);
+    const positionDefaults = {
+      Pitcher: "1",
+      Catcher: "2",
+      First: "3",
+      Second: "4",
+      Third: "5",
+      Shortstop: "6",
+      Left: "7",
+      Center: "8",
+      Right: "9",
+    };
+
+    const ids = Object.entries(globalPlayers).map(([position, player]) =>
+      player.id !== "" ? player.id : positionDefaults[position]
+    );
+
+    return JSON.stringify(ids);
   };
 
   const handleSim = () => {
@@ -340,20 +357,18 @@ function Simulator() {
       );
       if (confirmation) {
         console.log("avg player fill");
-        setdata(generateID("[305, 308, 318, 336, 334, 322, 343.344, 348]"));
+        setData(generateID);
+
+        runSimulation(data, setResponse);
         console.log(data);
       } else {
         console.log("denied avg player fill");
       }
     } else {
       console.log("All players set");
-      setdata(generateID(globalPlayers));
+      setData(generateID(globalPlayers));
     }
   };
-  useEffect(() => {
-    console.log(response);
-  }, [response]);
-
   const handleResize = () => {
     setWindowSize({
       width: "1000px",
@@ -366,6 +381,10 @@ function Simulator() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    console.log("response is updated");
+    console.log(response);
+  }, [response]);
   return (
     <Div>
       {window.innerWidth < 900 && (
@@ -520,7 +539,7 @@ function Simulator() {
       </Content>
       <BgLineContainer>
         <BgLine>
-          <Report></Report>
+          <Report result={response}></Report>
         </BgLine>
       </BgLineContainer>
     </Div>

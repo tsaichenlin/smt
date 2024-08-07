@@ -3,39 +3,25 @@ import axios from "axios";
 import { GlobalContext } from "../GlobalContext";
 
 const SendDataComponent = () => {
-  const { responce, setresponce } = useContext(GlobalContext);
-  const { data, setdata } = useContext(GlobalContext);
-  const { startSim, setStartSim } = useContext(GlobalContext);
+  const { response, setResponse } = useContext(GlobalContext);
+  const { data, setData } = useContext(GlobalContext);
 
   const handleChange = (e) => {
     //localhost:3000/static/media/background.0ced967e8b684bdc94b4.png
-    http: setdata(e.target.value);
+    http: setData(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log(typeof data);
       const response = await axios.post("/data", { data }); // Using relative URL
+      console.log(response);
       console.log(response.data);
     } catch (error) {
       console.error("There was an error sending the data!", error);
     }
   };
-  /*
-  useEffect(() => {
-    console.log("data changed");
-    runSimulation(data);
-  }, [data]);
-
-  const runSimulation = async (data) => {
-    console.log("running simulation");
-    try {
-      const response = await axios.post("/data", { data }); // Using relative URL
-      console.log(response.data);
-    } catch (error) {
-      console.error("There was an error sending the data!", error);
-    }
-  };*/
 
   // Using useEffect for single rendering
   const reload = async (e) => {
@@ -45,7 +31,7 @@ const SendDataComponent = () => {
       res.json().then((data) => {
         // Setting a data from api
         console.log(data);
-        setresponce({
+        setResponse({
           name: data.members,
           age: data.Age,
           date: data.Date,
@@ -59,10 +45,10 @@ const SendDataComponent = () => {
       <header className="App-header">
         <h1>React and flask</h1>
         {/* Calling a data from setdata for showing */}
-        <p>{responce.name}</p>
-        <p>{responce.age}</p>
-        <p>{responce.date}</p>
-        <p>{responce.programming}</p>
+        <p>{response.name}</p>
+        <p>{response.age}</p>
+        <p>{response.date}</p>
+        <p>{response.programming}</p>
         <button onClick={reload} />
       </header>
 
