@@ -27,7 +27,8 @@ export const GlobalProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
   const [data, setData] = useState("");
-  const [startSim, setStartSim] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -49,8 +50,8 @@ export const GlobalProvider = ({ children }) => {
         setResponse,
         data,
         setData,
-        startSim,
-        setStartSim,
+        isSimulating,
+        setIsSimulating,
       }}
     >
       {children}

@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { GlobalContext } from "../GlobalContext";
 
 const buttonAnimation = keyframes`
  0% {
@@ -47,16 +48,16 @@ const Button = styled.button`
     transition: width 0.5s ease;
     background-color: var(--white);
     bottom: -10px;
+    z-index: 12;
   }
   &.flashing {
     &::after {
-      animation: ${underline} 1.5s infinite;
+      animation: ${underline} 5s infinite;
     }
   }
 `;
 
-function SimButton({ onClick }) {
-  const [isFlashing, setIsFlashing] = useState(false);
+function SimButton({ onClick, isSimulating }) {
   /*
   const handleClick = () => {
     if (onClick) {
@@ -66,8 +67,9 @@ function SimButton({ onClick }) {
     setTimeout(() => setIsFlashing(false), 5000);
   };
 */
+
   return (
-    <Button className={isFlashing ? "flashing" : ""} onClick={onClick}>
+    <Button className={isSimulating ? "flashing" : ""} onClick={onClick}>
       Simulate
     </Button>
   );

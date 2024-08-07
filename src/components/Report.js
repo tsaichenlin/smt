@@ -65,6 +65,7 @@ const Th = styled.th`
   top: 0;
   z-index: 1;
   background: var(--gray);
+  border: solid 2px var(--gray);
 `;
 
 const Td = styled.td`
@@ -155,11 +156,10 @@ function Report() {
             <Tr>
               <Td>
                 {" "}
-                {response.RV_lineup ? response.RV_lineup.toFixed(2) : "N/a"}
+                {response.RV_lineup ? response.RV_lineup.toFixed(2) : "0"}
               </Td>
               <Td>
-                {(
-                  (Number(pitcherData?.pitcher_value) || 0) +
+                {(Number(pitcherData?.pitcher_value) || 0) +
                   (Number(catcherData?.catcher_value) || 0) +
                   (Number(firstBaseData?.first_base_value) || 0) +
                   (Number(secondBaseData?.second_base_value) || 0) +
@@ -167,8 +167,20 @@ function Report() {
                   (Number(shortstopData?.shortstop_value) || 0) +
                   (Number(leftFieldData?.left_field_value) || 0) +
                   (Number(centerFieldData?.center_field_value) || 0) +
-                  (Number(rightFieldData?.right_field_value) || 0)
-                ).toFixed(2)}
+                  (Number(rightFieldData?.right_field_value) || 0) ===
+                0
+                  ? "0"
+                  : (
+                      (Number(pitcherData?.pitcher_value) || 0) +
+                      (Number(catcherData?.catcher_value) || 0) +
+                      (Number(firstBaseData?.first_base_value) || 0) +
+                      (Number(secondBaseData?.second_base_value) || 0) +
+                      (Number(thirdBaseData?.third_base_value) || 0) +
+                      (Number(shortstopData?.shortstop_value) || 0) +
+                      (Number(leftFieldData?.left_field_value) || 0) +
+                      (Number(centerFieldData?.center_field_value) || 0) +
+                      (Number(rightFieldData?.right_field_value) || 0)
+                    ).toFixed(2)}
               </Td>
             </Tr>
           </tbody>
@@ -202,7 +214,8 @@ function Report() {
                         Number(pitcherData.pitcher_value) -
                         response.RV_player[0]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}
+                  {""}
                 </Td>
               </Tr>
               <Tr>
@@ -224,7 +237,7 @@ function Report() {
                         Number(catcherData.catcher_value) -
                         response.RV_player[1]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -246,7 +259,7 @@ function Report() {
                         Number(firstBaseData.first_base_value) -
                         response.RV_player[2]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -268,7 +281,7 @@ function Report() {
                         Number(secondBaseData.second_base_value) -
                         response.RV_player[3]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -290,7 +303,7 @@ function Report() {
                         Number(thirdBaseData.third_base_value) -
                         response.RV_player[4]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -312,7 +325,7 @@ function Report() {
                         Number(shortstopData.shortstop_value) -
                         response.RV_player[5]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -334,7 +347,7 @@ function Report() {
                         Number(leftFieldData.left_field_value) -
                         response.RV_player[6]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -356,7 +369,7 @@ function Report() {
                         Number(centerFieldData.center_field_value) -
                         response.RV_player[7]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
               <Tr>
@@ -378,7 +391,7 @@ function Report() {
                         Number(rightFieldData.right_field_value) -
                         response.RV_player[8]
                       ).toFixed(2)
-                    : ""}{" "}
+                    : "0"}{" "}
                 </Td>
               </Tr>
             </tbody>

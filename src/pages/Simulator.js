@@ -242,6 +242,7 @@ function Simulator() {
   const { isPopup, setIsPopup } = useContext(GlobalContext);
   const { data, setData } = useContext(GlobalContext);
   const { response, setResponse } = useContext(GlobalContext);
+  const { isSimulating, setIsSimulating } = useContext(GlobalContext);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -341,7 +342,7 @@ function Simulator() {
     return JSON.stringify(ids);
   };
 
-  const handleSim = () => {
+  const handleSim = async () => {
     const missingPos = [];
 
     for (let position in globalPlayers) {
@@ -349,26 +350,35 @@ function Simulator() {
         missingPos.push(position);
       }
     }
-    console.log("missing pos" + missingPos);
+    console.log("missing pos: " + missingPos);
 
     if (missingPos.length > 0) {
       const confirmation = window.confirm(
         `Some positions are empty, would you like to fill these positions with average player?`
       );
       if (confirmation) {
-        console.log("avg player fill");
+        console.log("Confirm avg player fill");
+        setIsSimulating(true);
         setData(generateID);
-
-        runSimulation(data, setResponse);
         console.log(data);
       } else {
-        console.log("denied avg player fill");
+        console.log("Denied avg player fill");
       }
     } else {
-      console.log("All players set");
-      setData(generateID(globalPlayers));
+      console.log("All players assigned");
+      setIsSimulating(true);
+      setData(generateID);
     }
   };
+
+  useEffect(() => {
+    console.log(data, isSimulating);
+    if (data !== null && isSimulating === true) {
+      runSimulation(data, setResponse, setIsSimulating);
+      console.log("runnings");
+    }
+  }, [data, isSimulating]);
+
   const handleResize = () => {
     setWindowSize({
       width: "1000px",
@@ -523,7 +533,10 @@ function Simulator() {
             <FieldZoom />
           </ImgContainer>
 
-          <SimButton onClick={handleSim}></SimButton>
+          <SimButton
+            onClick={handleSim}
+            isSimulating={isSimulating}
+          ></SimButton>
           <div>
             <p
               style={{
