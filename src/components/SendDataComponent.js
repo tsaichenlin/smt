@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { GlobalContext } from "../GlobalContext";
 
 const SendDataComponent = () => {
-  const [responce, setresponce] = useState("");
-  const [data, setdata] = useState("");
+  const { responce, setresponce } = useContext(GlobalContext);
+  const { data, setdata } = useContext(GlobalContext);
+  const { startSim, setStartSim } = useContext(GlobalContext);
 
   const handleChange = (e) => {
     //localhost:3000/static/media/background.0ced967e8b684bdc94b4.png
@@ -19,6 +21,21 @@ const SendDataComponent = () => {
       console.error("There was an error sending the data!", error);
     }
   };
+  /*
+  useEffect(() => {
+    console.log("data changed");
+    runSimulation(data);
+  }, [data]);
+
+  const runSimulation = async (data) => {
+    console.log("running simulation");
+    try {
+      const response = await axios.post("/data", { data }); // Using relative URL
+      console.log(response.data);
+    } catch (error) {
+      console.error("There was an error sending the data!", error);
+    }
+  };*/
 
   // Using useEffect for single rendering
   const reload = async (e) => {

@@ -5,10 +5,8 @@ import Simulator from "./pages/Simulator";
 import background from "./background.png";
 import About from "./pages/About";
 import How from "./pages/How";
-import ModelLoader from "./model/ModelLoader";
 //import { TransitionGroup, CSSTransition } from "react-transition-group";
 import SendDataComponent from "./components/SendDataComponent";
-
 
 function App() {
   return (
@@ -20,7 +18,6 @@ function App() {
           <Route path="sim" element={<Simulator />}></Route>
           <Route path="about" element={<About />}></Route>
           <Route path="how" element={<How />}></Route>
-          <Route path="test" element={<ModelLoader />}></Route>
           <Route path="flask" element={<SendDataComponent />}></Route>
         </Routes>
       </BrowserRouter>

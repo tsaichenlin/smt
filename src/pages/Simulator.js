@@ -239,6 +239,8 @@ function Simulator() {
   const { globalPlayers, setGlobalPlayers } = useContext(GlobalContext);
   const { isShowing, setIsShowing } = useContext(GlobalContext);
   const { isPopup, setIsPopup } = useContext(GlobalContext);
+  const { data, setdata } = useContext(GlobalContext);
+  const { response } = useContext(GlobalContext);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -318,6 +320,10 @@ function Simulator() {
     setIsPopup(!isPopup);
   };
 
+  const generateID = () => {
+    return Object.values(globalPlayers).map((player) => player.id);
+  };
+
   const handleSim = () => {
     const missingPos = [];
 
@@ -334,13 +340,19 @@ function Simulator() {
       );
       if (confirmation) {
         console.log("avg player fill");
+        setdata(generateID("[305, 308, 318, 336, 334, 322, 343.344, 348]"));
+        console.log(data);
       } else {
         console.log("denied avg player fill");
       }
     } else {
       console.log("All players set");
+      setdata(generateID(globalPlayers));
     }
   };
+  useEffect(() => {
+    console.log(response);
+  }, [response]);
 
   const handleResize = () => {
     setWindowSize({
@@ -358,7 +370,7 @@ function Simulator() {
     <Div>
       {window.innerWidth < 900 && (
         <Overlay>
-          <i class="fa-solid fa-expand"></i>
+          <i className="fa-solid fa-expand"></i>
           <h1>Who's on First?</h1>
           <p>Please expand your browser window to use application.</p>
         </Overlay>

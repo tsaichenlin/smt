@@ -2,7 +2,7 @@
   "name": "smt",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000/",
+  "proxy": "http://127.0.0.1:5000/",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@tensorflow/tfjs": "^4.20.0",
@@ -10,6 +10,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.3",
+    "flask": "^0.2.10",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
