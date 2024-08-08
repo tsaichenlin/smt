@@ -7,14 +7,16 @@ import SearchCard from "./SearchCard";
 const SearchBar = styled.input`
   width: 100%;
   padding: 10px 20px;
+  border-radius: 20px;
   box-sizing: border-box;
-  border: solid var(--white) 1px;
+  border: none;
   background: none;
   color: var(--white);
   outline: none;
+  background-color: var(--dark-blue);
   z-index: 5;
   &::placeholder {
-    color: var(--white);
+    color: var(--transparent-white);
   }
 `;
 const Button = styled.button`
@@ -23,7 +25,7 @@ const Button = styled.button`
   border: none;
   color: var(--white);
   font-weight: normal;
-  font-size: 22px;
+  font-size: 20px;
   &:hover {
     cursor: pointer;
     font-weight: bold;
@@ -40,14 +42,24 @@ const Div = styled.div`
 const ResultContainer = styled.div`
   width: 100%;
   height: 700px;
-  overflow: auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   margin-right: 10px;
   gap: 20px;
 
   &::-webkit-scrollbar {
-    width: 0px;
+    width: 4px;
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--blue);
+    padding: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--white);
+    border-radius: 10px;
   }
 `;
 

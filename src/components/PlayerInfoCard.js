@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import Papa from "papaparse";
 import styled from "styled-components";
 
-import photoPlaceHolder from "../images/photoPlaceHolder.webp";
+import photoPlaceholder from "../images/photoPlaceholder.png";
 import { GlobalContext } from "../GlobalContext";
 const Card = styled.div`
   background-color: var(--dark-blue);
@@ -12,6 +12,7 @@ const Card = styled.div`
   align-items: top;
   box-sizing: border-box;
   padding: 20px;
+  padding-bottom: 0;
   flex-direction: row;
 `;
 
@@ -256,14 +257,14 @@ export default function PlayerInfoCard() {
     );
   }
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div style={{ marginTop: "10px" }}>
       <Div style={{ justifyContent: "space-between" }}>
         <Title>Selected {selectedPlayer}</Title>
         <RemoveButton onClick={deletePlayer}>Delete Player</RemoveButton>
       </Div>
 
       <Card>
-        <Photo src={photoPlaceHolder} />
+        <Photo src={photoPlaceholder} />
         <InfoDiv>
           <Div>
             <Name>{player.first_name + " " + player.last_name}</Name>
@@ -276,9 +277,7 @@ export default function PlayerInfoCard() {
           <Info>
             {"Secondary: " + generateSecondary(player.secondary_position)}
           </Info>
-          <Info>
-            {"Run Value: " + Math.round(player.run_value * 100) / 100}
-          </Info>
+          <Info>{"RVv: " + Math.round(player.run_value * 100) / 100}</Info>
         </InfoDiv>
       </Card>
       <ScrollSection>
@@ -286,7 +285,7 @@ export default function PlayerInfoCard() {
           <Table>
             <thead>
               <Th>Position</Th>
-              <Th>Run Value</Th>
+              <Th>Run Value (RVv)</Th>
             </thead>
             <tbody>
               <Tr>

@@ -26,7 +26,7 @@ const Players = styled.h2`
 
 const Table = styled.table`
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
   color: var(--white);
   text-align: left;
   font-weight: 500;
@@ -70,7 +70,6 @@ const Td = styled.td`
   }
   box-sizing: border-box;
   height: 45px;
-  border: solid 2px var(--table-accent);
 `;
 
 const ScrollSection = styled.div`
@@ -140,15 +139,15 @@ function Report() {
   };
 
   const positionKeyMap = {
-    First: "first_base_value",
-    Second: "second_base_value",
-    Third: "third_base_value",
-    Shortstop: "shortstop_value",
-    Left: "left_field_value",
-    Center: "center_field_value",
-    Right: "right_field_value",
-    Pitcher: "pitcher_value",
-    Catcher: "catcher_value",
+    First: "first_base",
+    Second: "second_base",
+    Third: "third_base",
+    Shortstop: "shortstop",
+    Left: "left_field",
+    Center: "center_field",
+    Right: "right_field",
+    Pitcher: "pitcher",
+    Catcher: "catcher",
   };
 
   const renderPlayerRow = (position, index, playerData) => {
@@ -163,16 +162,13 @@ function Report() {
 
     const playerKey = positionKeyMap[position];
     const playerValue = playerData
-      ? Number(playerData[playerKey]).toFixed(2)
+      ? Number(playerData[`${playerKey}_value`]).toFixed(2)
       : "-";
-
-    if (playerData) {
-      console.log("num ", playerData, playerKey);
-    }
+    console.log(playerValue);
     const difference =
       response && playerData
         ? (
-            response.RV_player[index] - Number(playerData[`${playerKey}`])
+            response.RV_player[index] - Number(playerData[`${playerKey}_value`])
           ).toFixed(2)
         : "-";
     const pos = response ? position : "-";
@@ -198,13 +194,13 @@ function Report() {
             Top 3:{" "}
             {response && response.TopPlayers
               ? getPlayerRanking(response.TopPlayers)
-              : "-"}
+              : "N/a"}
           </Players>
           <Players color="var(--red)">
             Bottom 3:{" "}
             {response && response.BottomPlayers
               ? getPlayerRanking(response.BottomPlayers)
-              : "-"}
+              : "N/a"}
           </Players>
         </div>
         <Table>

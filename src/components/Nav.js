@@ -40,6 +40,9 @@ const NavLink = styled(Link)`
   &:hover::after {
     width: 100%;
   }
+  &.hide {
+    display: none;
+  }
 `;
 
 const Title = styled.h1`
@@ -52,7 +55,7 @@ const Title = styled.h1`
 `;
 
 const HowIcon = styled.div`
-  display: inline-block;
+  display: none;
   font-weight: 500;
   font-size: 18px;
   color: var(--white);
@@ -76,6 +79,7 @@ const HowIcon = styled.div`
   }
   &.show {
     visibility: visible;
+    display: inline-block;
   }
 `;
 const P = styled.p`
@@ -89,10 +93,10 @@ function Nav(props) {
   return (
     <Container>
       <div>
-        <Link to="/sim" style={{ textDecoration: "none" }}>
+        <Link to="/" style={{ textDecoration: "none" }}>
           <Title style={{ color: props.color }}>Who's on First?</Title>
         </Link>
-        <P>Baseball Simulator</P>
+        <P>A Baseball Defense Simulator</P>
       </div>
       <LinkContainer>
         <HowIcon
@@ -104,6 +108,19 @@ function Nav(props) {
         >
           Tutorial
         </HowIcon>
+        <NavLink
+          className={props.simulation ? "" : "hide"}
+          style={{
+            color: "var(--blue)",
+            "--hover": "var(--blue)",
+          }}
+          to="/sim"
+          onClick={() => {
+            setIsPopup(false);
+          }}
+        >
+          Back to Simulation
+        </NavLink>
         <NavLink
           to="/how"
           style={{ color: props.color, "--hover": props.color }}
@@ -121,4 +138,8 @@ export default Nav;
           style={{ color: props.color, "--hover": props.color }}
         >
           About
-        </NavLink>*/
+        </NavLink>
+
+        Please generate a 2d image using 
+        
+        */

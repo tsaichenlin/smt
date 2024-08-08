@@ -1,18 +1,4 @@
 import styled, { keyframes } from "styled-components";
-import { useState, useContext } from "react";
-import { GlobalContext } from "../GlobalContext";
-
-const buttonAnimation = keyframes`
- 0% {
-    background-color: var(--white);
-    color: var(--blue);
- }
-  100% {
-    background-color: var(--blue);
-    color: var(--white);
-
- }
-`;
 
 const underline = keyframes`
  0% {
@@ -33,9 +19,10 @@ const Button = styled.button`
   font-size: 15px;
   position: relative;
   cursor: pointer;
-
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
   &:hover {
-    border: solid 0.5px var(--white);
+    background-color: var(--dark-blue);
   }
 
   &::after {
@@ -58,16 +45,6 @@ const Button = styled.button`
 `;
 
 function SimButton({ onClick, isSimulating }) {
-  /*
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    }
-    setIsFlashing(true);
-    setTimeout(() => setIsFlashing(false), 5000);
-  };
-*/
-
   return (
     <Button className={isSimulating ? "flashing" : ""} onClick={onClick}>
       Simulate

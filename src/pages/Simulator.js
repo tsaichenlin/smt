@@ -21,7 +21,7 @@ const Div = styled.div`
     content: "";
     background-color: var(--dark-gray);
     height: 100%;
-    width: 55%;
+    width: 60%;
     position: absolute;
     right: 0;
     top: 0;
@@ -33,7 +33,7 @@ const Div = styled.div`
 const Content = styled.div`
   display: flex;
   position: relative;
-  min-height: 680px;
+  min-height: calc(100vh - 100px);
   box-sizing: border-box;
 `;
 const BgLineContainer = styled.div`
@@ -42,7 +42,7 @@ const BgLineContainer = styled.div`
   bottom: 0;
   top: 60px;
   height: calc(100% - 60px);
-  width: 55%;
+  width: 60%;
   z-index: 0;
   display: flex;
   align-items: center;
@@ -55,13 +55,15 @@ const BgLine = styled.div`
   border: solid 1px var(--gray);
   height: 90%;
   width: 90%;
-
+  border-radius: 20px;
   z-index: -1;
   position: relative;
   top: 0;
   right: 0;
 
   &::before {
+    border-radius: 10px;
+
     content: "";
     border: solid 1px var(--gray);
     position: absolute;
@@ -74,7 +76,7 @@ const BgLine = styled.div`
 
 const TeamSection = styled.div`
   position: absolute;
-  right: 55%;
+  right: 60%;
   transform: translate(50%, 20px);
   z-index: 4;
 
@@ -85,7 +87,7 @@ const TeamSection = styled.div`
 `;
 
 const Left = styled.div`
-  width: 45%;
+  width: 40%;
   display: flex;
   align-items: center;
   padding-right: 85px;
@@ -94,6 +96,7 @@ const Left = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  margin-bottom: 20px;
 `;
 
 const ImgContainer = styled.div`
@@ -132,7 +135,7 @@ const slideOut = keyframes`
 const EditPanel = styled.div`
   background-color: var(--blue);
   height: 100%;
-  width: 55%;
+  width: 60%;
   position: absolute;
   right: 0;
   top: 0;
@@ -160,16 +163,28 @@ const EditPanel = styled.div`
 
 const ExitButton = styled.div`
   display: inline-block;
-  font-weight: 900;
+  font-weight: bold;
   font-size: 20px;
   color: var(--white);
   cursor: pointer;
+  padding: 5px;
 `;
 
 const Section = styled.div`
   height: 90%;
   margin-left: 80px;
   overflow: hidden;
+`;
+
+const ZoomIn = keyframes`
+  0%{
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100%{
+    transform: scale(1);
+    opacity: 1;
+  }
 `;
 
 const PopupDiv = styled.div`
@@ -185,14 +200,18 @@ const PopupDiv = styled.div`
 const PopupCard = styled.div`
   position: relative;
   background-color: var(--white);
-  width: 40vw;
-  height: 40vh;
+  width: 60vw;
+  height: 60vh;
   z-index: 6;
   padding: 20px;
   min-width: 400px;
   min-height: 250px;
   max-width: 700px;
   box-sizing: border-box;
+
+  animation: ${ZoomIn} 0.4s ease-out;
+
+  border-radius: 20px;
 `;
 
 const Overlay = styled.div`
@@ -249,6 +268,12 @@ function Simulator() {
     height: window.innerHeight,
   });
 
+  const handleExit = () => {
+    if (editMode || editPlayerMode) {
+      exitEditMode();
+    }
+  };
+
   const enterEditMode = () => {
     if (editMode) {
       setIsShowing(true);
@@ -277,21 +302,6 @@ function Simulator() {
       setTimeout(() => {
         setEditPlayerMode(false);
         setSelectedPlayer("");
-      }, 600);
-    }
-  };
-  const handleStarButton = () => {
-    if (editPlayerMode && selectedPlayer == "") {
-      setIsShowing(true);
-      setTimeout(() => {
-        setEditPlayerMode(false);
-      }, 600);
-    } else {
-      setIsShowing(true);
-      setTimeout(() => {
-        setEditMode(false);
-        setEditPlayerMode(true);
-        setIsShowing(false);
       }, 600);
     }
   };
@@ -338,10 +348,14 @@ function Simulator() {
     const ids = Object.entries(globalPlayers).map(([position, player]) =>
       player.id !== "" ? player.id : positionDefaults[position]
     );
+    // const ids = Object.entries(globalPlayers).map(([player]) => player.id);
 
     return JSON.stringify(ids);
   };
 
+  useEffect(() => {
+    console.log("Popup state changed:", isPopup);
+  }, [isPopup]);
   const handleSim = async () => {
     const missingPos = [];
 
@@ -354,7 +368,7 @@ function Simulator() {
 
     if (missingPos.length > 0) {
       const confirmation = window.confirm(
-        `Some positions are empty, would you like to fill these positions with average player?`
+        `Some positions are empty, would you like to fill these positions with average players?`
       );
       if (confirmation) {
         console.log("Confirm avg player fill");
@@ -397,19 +411,29 @@ function Simulator() {
   }, [response]);
   return (
     <Div>
-      {window.innerWidth < 900 && (
+      {window.innerWidth < 700 && (
         <Overlay>
           <i className="fa-solid fa-expand"></i>
           <h1>Who's on First?</h1>
-          <p>Please expand your browser window to use application.</p>
+          <p style={{ textAlign: "center" }}>
+            Please expand your browser window to use application.
+          </p>
         </Overlay>
       )}
 
       {isPopup && (
-        <PopupDiv>
-          <PopupCard onClick={handlePopup}>
-            <ExitButton onClick={handlePopup} style={{ color: "var(--blue)" }}>
-              &#10005;
+        <PopupDiv onClick={handlePopup}>
+          <PopupCard onClick={(e) => e.stopPropagation()}>
+            <ExitButton
+              onClick={handlePopup}
+              style={{
+                color: "var(--blue)",
+                display: "block",
+                textAlign: "right",
+                paddingRight: "10px",
+              }}
+            >
+              &#x2715;
             </ExitButton>
             <h2
               style={{
@@ -429,7 +453,7 @@ function Simulator() {
               style={{ color: "var(--gray)", textAlign: "center", margin: "0" }}
             >
               {" "}
-              A Baseball Simulator
+              A Baseball Defense Simulator
             </h4>
             <p style={{ textAlign: "center", color: "var(--gray)" }}>
               Tutorial gif here plus description, i wil style this better once i
@@ -446,60 +470,60 @@ function Simulator() {
           name={globalPlayers.Pitcher.name}
           position="P"
           onClick={() => handlePlayerButton("pitcher")}
-          clicked={selectedPlayer == "pitcher"}
+          clicked={selectedPlayer == "Pitcher"}
         />
         <PlayerButton
           name={globalPlayers.Catcher.name}
           position="C"
           onClick={() => handlePlayerButton("catcher")}
-          clicked={selectedPlayer == "catcher"}
+          clicked={selectedPlayer == "Catcher"}
         />
         <PlayerButton
           name={globalPlayers.First.name}
           position="1B"
           onClick={() => handlePlayerButton("first")}
-          clicked={selectedPlayer == "first"}
+          clicked={selectedPlayer == "First"}
         />
         <PlayerButton
           name={globalPlayers.Second.name}
           position="2B"
           onClick={() => handlePlayerButton("second")}
-          clicked={selectedPlayer == "second"}
+          clicked={selectedPlayer == "Second"}
         />
         <PlayerButton
           name={globalPlayers.Third.name}
           position="3B"
           onClick={() => handlePlayerButton("third")}
-          clicked={selectedPlayer == "third"}
+          clicked={selectedPlayer == "Third"}
         />
         <PlayerButton
           name={globalPlayers.Shortstop.name}
           position="SS"
           onClick={() => handlePlayerButton("shortstop")}
-          clicked={selectedPlayer == "shortstop"}
+          clicked={selectedPlayer == "Shortstop"}
         />
         <PlayerButton
           name={globalPlayers.Left.name}
           position="LF"
           onClick={() => handlePlayerButton("left")}
-          clicked={selectedPlayer == "left"}
+          clicked={selectedPlayer == "Left"}
         />
         <PlayerButton
           name={globalPlayers.Center.name}
           position="CF"
           onClick={() => handlePlayerButton("center")}
-          clicked={selectedPlayer == "center"}
+          clicked={selectedPlayer == "Center"}
         />
         <PlayerButton
           name={globalPlayers.Right.name}
           position="RF"
           onClick={() => handlePlayerButton("right")}
-          clicked={selectedPlayer == "right"}
+          clicked={selectedPlayer == "Right"}
         />
       </TeamSection>
       {editMode && (
         <EditPanel isShowing={isShowing} title="Edit Mode">
-          <ExitButton onClick={exitEditMode}>&#10005;</ExitButton>
+          <ExitButton onClick={exitEditMode}> &#x2715;</ExitButton>
           {!editPlayerMode && (
             <h3
               style={{
@@ -519,16 +543,15 @@ function Simulator() {
       )}
       {editPlayerMode && (
         <EditPanel isShowing={isShowing} title="Player Info">
-          <ExitButton onClick={exitEditMode}>&#10005;</ExitButton>
+          <ExitButton onClick={exitEditMode}>&#x2715;</ExitButton>
 
           <Section>
             <PlayerInfoCard />
           </Section>
         </EditPanel>
       )}
-
       <Content>
-        <Left>
+        <Left onClick={handleExit}>
           <ImgContainer>
             <FieldZoom />
           </ImgContainer>
@@ -538,6 +561,7 @@ function Simulator() {
             isSimulating={isSimulating}
           ></SimButton>
           <div>
+            {/*}
             <p
               style={{
                 color: "var(--blue)",
@@ -546,7 +570,7 @@ function Simulator() {
               }}
             >
               Select Players and Simulate the Play.
-            </p>
+            </p>*/}
           </div>
         </Left>
       </Content>

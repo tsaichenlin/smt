@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useContext } from "react";
 import { GlobalContext } from "../GlobalContext";
+import { useNavigate } from "react-router-dom";
+
 const Container = styled.div`
   display: flex;
   width: 100vw;
@@ -45,14 +47,19 @@ const SubTitle = styled.h2`
 `;
 function Start() {
   const { setIsPopup } = useContext(GlobalContext);
+  const navigate = useNavigate();
+
   const handleStart = () => {
     setIsPopup(true);
+    setTimeout(() => {
+      navigate("/sim");
+    }, 200);
   };
   return (
     <Container id="start-container">
       <Title>Who's on First?</Title>
-      <SubTitle>A Baseball Simulator</SubTitle>
-      <StartButton onClick={handleStart} id="start-button" to="/sim">
+      <SubTitle>A Baseball Defense Simulator</SubTitle>
+      <StartButton onClick={handleStart} id="start-button">
         Enter
       </StartButton>
     </Container>

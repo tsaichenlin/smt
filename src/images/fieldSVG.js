@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { GlobalContext } from "../GlobalContext";
 
 const Path = styled.path`
-  transition: transform 0.6s ease, fill 0.6s ease;
+  transition: transform 0.5s ease, fill 0.5s ease;
   transform-origin: center;
   transform-box: fill-box;
   fill: var(--gray);
@@ -115,55 +115,55 @@ const FieldSVG = ({ className }) => {
       <Path
         d="M451.5 194L453.633 200.564H460.535L454.951 204.621L457.084 211.186L451.5 207.129L445.916 211.186L448.049 204.621L442.465 200.564H449.367L451.5 194Z"
         fill="#FD002E"
-        className={selectedPlayer == "right" ? "clicked" : ""}
+        className={selectedPlayer == "Right" ? "clicked" : ""}
         onClick={() => handleClick("Right")}
       />
       <Path
         d="M199.5 365L201.633 371.564H208.535L202.951 375.621L205.084 382.186L199.5 378.129L193.916 382.186L196.049 375.621L190.465 371.564H197.367L199.5 365Z"
         fill="#FD002E"
-        className={selectedPlayer == "third" ? "clicked" : ""}
+        className={selectedPlayer == "Third" ? "clicked" : ""}
         onClick={() => handleClick("Third")}
       />
       <Path
         d="M405.5 365L407.633 371.564H414.535L408.951 375.621L411.084 382.186L405.5 378.129L399.916 382.186L402.049 375.621L396.465 371.564H403.367L405.5 365Z"
         fill="#FD002E"
-        className={selectedPlayer == "first" ? "clicked" : ""}
+        className={selectedPlayer == "First" ? "clicked" : ""}
         onClick={() => handleClick("First")}
       />
       <Path
         d="M303.5 384L305.633 390.564H312.535L306.951 394.621L309.084 401.186L303.5 397.129L297.916 401.186L300.049 394.621L294.465 390.564H301.367L303.5 384Z"
         fill="#FD002E"
-        className={selectedPlayer == "pitcher" ? "clicked" : ""}
+        className={selectedPlayer == "Pitcher" ? "clicked" : ""}
         onClick={() => handleClick("Pitcher")}
       />
       <Path
         d="M302.5 129L304.633 135.564H311.535L305.951 139.621L308.084 146.186L302.5 142.129L296.916 146.186L299.049 139.621L293.465 135.564H300.367L302.5 129Z"
         fill="#FD002E"
-        className={selectedPlayer == "center" ? "clicked" : ""}
+        className={selectedPlayer == "Center" ? "clicked" : ""}
         onClick={() => handleClick("Center")}
       />
       <Path
         d="M156.5 194L158.633 200.564H165.535L159.951 204.621L162.084 211.186L156.5 207.129L150.916 211.186L153.049 204.621L147.465 200.564H154.367L156.5 194Z"
         fill="#FD002E"
-        className={selectedPlayer == "left" ? "clicked" : ""}
+        className={selectedPlayer == "Left" ? "clicked" : ""}
         onClick={() => handleClick("Left")}
       />
       <Path
         d="M250.5 293L252.633 299.564H259.535L253.951 303.621L256.084 310.186L250.5 306.129L244.916 310.186L247.049 303.621L241.465 299.564H248.367L250.5 293Z"
         fill="#FD002E"
-        className={selectedPlayer == "shortstop" ? "clicked" : ""}
+        className={selectedPlayer == "Shortstop" ? "clicked" : ""}
         onClick={() => handleClick("Shortstop")}
       />
       <Path
         d="M303.5 500L305.633 506.564H312.535L306.951 510.621L309.084 517.186L303.5 513.129L297.916 517.186L300.049 510.621L294.465 506.564H301.367L303.5 500Z"
         fill="#FD002E"
-        className={selectedPlayer == "catcher" ? "clicked" : ""}
+        className={selectedPlayer == "Catcher" ? "clicked" : ""}
         onClick={() => handleClick("Catcher")}
       />
       <Path
         d="M356.5 294L358.633 300.564H365.535L359.951 304.621L362.084 311.186L356.5 307.129L350.916 311.186L353.049 304.621L347.465 300.564H354.367L356.5 294Z"
         fill="#FD002E"
-        className={selectedPlayer == "second" ? "clicked" : ""}
+        className={selectedPlayer == "Second" ? "clicked" : ""}
         onClick={() => handleClick("Second")}
       />
     </svg>

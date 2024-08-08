@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import photoPlaceHolder from "../images/photoPlaceHolder.webp";
+import photoPlaceholder from "../images/photoPlaceholder.png";
 import { useState, useContext } from "react";
 import { GlobalContext } from "../GlobalContext";
 
@@ -12,6 +12,7 @@ const Card = styled.div`
   box-sizing: border-box;
   padding: 10px;
   justify-content: center;
+  border-radius: 20px;
 `;
 
 const InfoDiv = styled.div`
@@ -19,13 +20,14 @@ const InfoDiv = styled.div`
   padding: 0;
   color: var(--white);
   overflow: hidden;
-  width: 200px;
+  width: 250px;
 `;
 
 const Photo = styled.img`
-  height: 100px;
+  height: 150px;
   margin: auto 0;
   object-fit: cover;
+  border-radius: 16px;
 `;
 
 const Name = styled.h1`
@@ -34,10 +36,15 @@ const Name = styled.h1`
 `;
 
 const Info = styled.p`
-  font-size: 13px;
+  font-size: 15px;
   margin: 5px 0;
   padding: 0;
   width: 100%;
+  box-sizing: border-box;
+
+  span {
+    color: var(--transparent-white);
+  }
 `;
 
 const Dropdown = styled.div`
@@ -48,27 +55,38 @@ const Dropdown = styled.div`
 
 const DropdownButton = styled.button`
   width: 120px;
-  height: 20px;
+  height: 30px;
+  border-radius: 20px;
   border: none;
   background-color: var(--blue);
   color: var(--white);
   margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 15px;
   position: relative;
+  transition: border-radius 0.3s ease;
 
   &:hover {
     cursor: pointer;
   }
   padding-top: ${(props) => (props.first ? "5px" : "0")};
   padding-bottom: ${(props) => (props.last ? "5px" : "0")};
+
+  &.clicked {
+    border-radius: 10px 10px 0 0;
+  }
 `;
 
 const DropdownContent = styled.div`
   position: absolute;
+  border-radius: 0 0 10px 10px;
   z-index: 1;
-  display: ${(props) => (props.show ? "block" : "none")};
   width: 100%;
-  padding: 5px 0;
   background-color: var(--white);
+  opacity: ${(props) => (props.show ? "1" : "0")};
+  visibility: ${(props) => (props.show ? "visible" : "hidden")};
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  overflow: hidden;
 `;
 const Option = styled.button`
   font-size: 13px;
@@ -76,7 +94,7 @@ const Option = styled.button`
   width: 100%;
   z-index: 2;
   border: none;
-  height: 20px;
+  height: 25px;
   text-align: center;
   box-shadow: none;
   color: var(--blue);
@@ -86,6 +104,10 @@ const Option = styled.button`
     cursor: pointer;
     background-color: var(--blue);
     color: var(--white);
+  }
+  &:first-child,
+  :last-child {
+    padding-top: 5px;
   }
 `;
 
@@ -136,23 +158,42 @@ function SearchCard({ player }) {
   };
   return (
     <Card>
-      <Photo src={photoPlaceHolder}></Photo>
+      <Photo src={photoPlaceholder}></Photo>
       <InfoDiv>
         <Name>{player.first_name + " " + player.last_name}</Name>
-        <Info>{"ID: " + player.player_id}</Info>
-        <Info>{"Level: " + player.level}</Info>
-        <Info>{"Primary: " + formatPrimary(player.primary_position)}</Info>
         <Info>
-          {"Secondary: " + generateSecondary(player.secondary_position)}
+          <span>ID: </span>
+          {player.player_id}
         </Info>
-        <Info>{"Run Value: " + Math.round(player.run_value * 100) / 100}</Info>
+        <Info>
+          {" "}
+          <span>Level: </span>
+          {player.level}
+        </Info>
+        <Info>
+          {" "}
+          <span>Primary: </span>
+          {formatPrimary(player.primary_position)}
+        </Info>
+        <Info>
+          <span>Secondary: </span>
+          {generateSecondary(player.secondary_position)}
+        </Info>
+        <Info>
+          {" "}
+          <span>RVv: </span>
+          {Math.round(player.run_value * 100) / 100}
+        </Info>
       </InfoDiv>
       <Dropdown onMouseLeave={handleMouseLeave}>
-        <DropdownButton onClick={toggleDropdown}>Select</DropdownButton>
+        <DropdownButton
+          onClick={toggleDropdown}
+          className={dropdownOpen ? "clicked" : ""}
+        >
+          Select
+        </DropdownButton>
         <DropdownContent show={dropdownOpen}>
-          <Option first onClick={handleSelectPlayer("Pitcher")}>
-            Pitcher
-          </Option>
+          <Option onClick={handleSelectPlayer("Pitcher")}>Pitcher</Option>
           <Option onClick={handleSelectPlayer("Catcher")}>Catcher</Option>
           <Option onClick={handleSelectPlayer("First")}>1st Base</Option>
           <Option onClick={handleSelectPlayer("Second")}>2nd Base</Option>
