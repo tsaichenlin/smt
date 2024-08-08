@@ -151,6 +151,18 @@ function Report() {
     Catcher: "catcher_value",
   };
 
+  const positionName = {
+    First: "First Base",
+    Second: "Second Base",
+    Third: "Third Base",
+    Shortstop: "Shortstop",
+    Left: "Left Field",
+    Center: "Center Field",
+    Right: "Right Field",
+    Pitcher: "Pitcher",
+    Catcher: "Catcher",
+  };
+
   const renderPlayerRow = (position, index, playerData) => {
     const playerName =
       globalPlayers[position].name !== "..."
@@ -162,9 +174,8 @@ function Report() {
     const responseValue = response ? response.RV_player[index].toFixed(2) : "-";
 
     const playerKey = positionKeyMap[position];
-    const playerValue = playerData
-      ? Number(playerData[playerKey]).toFixed(2)
-      : "-";
+    const playerValue =
+      playerData && response ? Number(playerData[playerKey]).toFixed(2) : "-";
 
     if (playerData) {
       console.log("num ", playerData, playerKey);
@@ -175,7 +186,7 @@ function Report() {
             response.RV_player[index] - Number(playerData[`${playerKey}`])
           ).toFixed(2)
         : "-";
-    const pos = response ? position : "-";
+    const pos = response ? positionName[position] : "-";
 
     return (
       <Tr key={position}>
@@ -232,7 +243,8 @@ function Report() {
                   (Number(rightFieldData?.right_field_value) || 0) ===
                 0
                   ? "-"
-                  : (
+                  : response.RV_lineup
+                  ? (
                       (Number(pitcherData?.pitcher_value) || 0) +
                       (Number(catcherData?.catcher_value) || 0) +
                       (Number(firstBaseData?.first_base_value) || 0) +
@@ -242,7 +254,8 @@ function Report() {
                       (Number(leftFieldData?.left_field_value) || 0) +
                       (Number(centerFieldData?.center_field_value) || 0) +
                       (Number(rightFieldData?.right_field_value) || 0)
-                    ).toFixed(2)}
+                    ).toFixed(2)
+                  : "-"}
               </Td>
               <Td>
                 {(Number(pitcherData?.pitcher_value) || 0) +

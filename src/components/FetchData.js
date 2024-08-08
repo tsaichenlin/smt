@@ -38,27 +38,12 @@ export const useRVv = (playerPosition) => {
   }, []);
 
   useEffect(() => {
-    const positionDefaults = {
-      Pitcher: 1,
-      Catcher: 2,
-      First: 3,
-      Second: 4,
-      Third: 5,
-      Shortstop: 6,
-      Left: 7,
-      Center: 8,
-      Right: 9,
-    };
     console.log("getting data");
-    if (data.length > 0) {
-      if (globalPlayers[playerPosition].id == "") {
-        console.log("default");
-        var playerId = positionDefaults[playerPosition];
-      } else {
-        var playerId = globalPlayers[playerPosition].id;
-        console.log("not deafult");
-      }
+    if (data.length > 0 && globalPlayers[playerPosition]?.id) {
+      const playerId = globalPlayers[playerPosition].id;
       const playerRow = data.find((row) => row.player_id == playerId);
+      console.log(playerId);
+      console.log(playerRow);
       if (playerRow) {
         setPlayerData(playerRow);
       } else {

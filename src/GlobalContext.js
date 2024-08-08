@@ -5,15 +5,15 @@ export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   //Lineup
   const [globalPlayers, setGlobalPlayers] = useState({
-    Pitcher: { name: "...", id: "" },
-    Catcher: { name: "...", id: "" },
-    First: { name: "...", id: "" },
-    Second: { name: "...", id: "" },
-    Third: { name: "...", id: "" },
-    Shortstop: { name: "...", id: "" },
-    Left: { name: "...", id: "" },
-    Center: { name: "...", id: "" },
-    Right: { name: "...", id: "" },
+    Pitcher: { name: "...", id: "1" },
+    Catcher: { name: "...", id: "2" },
+    First: { name: "...", id: "3" },
+    Second: { name: "...", id: "4" },
+    Third: { name: "...", id: "5" },
+    Shortstop: { name: "...", id: "6" },
+    Left: { name: "...", id: "7" },
+    Center: { name: "...", id: "8" },
+    Right: { name: "...", id: "9" },
   });
 
   //Navigation Helpers
