@@ -28,17 +28,12 @@ const Div = styled.div`
     z-index: -1;
   }
   overflow: hidden;
-  &::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-  }
 `;
 
 const Content = styled.div`
   display: flex;
   position: relative;
-  min-height: calc(100vh);
-
+  min-height: calc(100vh - 200px);
   box-sizing: border-box;
   &::-webkit-scrollbar {
     width: 0px;
@@ -58,7 +53,7 @@ const BgLineContainer = styled.div`
   justify-content: center;
   padding-left: 25px;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
 `;
 const BgLine = styled.div`
   border: solid 1px var(--gray);
@@ -70,7 +65,7 @@ const BgLine = styled.div`
   top: 0;
   right: 0;
   box-sizing: border-box;
-
+  overflow: hidden;
   &::before {
     border-radius: 10px;
 

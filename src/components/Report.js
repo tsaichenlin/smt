@@ -7,7 +7,8 @@ const Container = styled.div`
   padding: 10px 50px;
   box-sizing: border-box;
   padding-right: 30px;
-  height: 630px;
+  height: 100%;
+  padding-bottom: 25px;
 `;
 
 const Title = styled.h2`
@@ -76,7 +77,7 @@ const Td = styled.td`
 const ScrollSection = styled.div`
   overflow-y: auto;
   overflow-x: auto;
-  max-height: calc(100vh - 430px);
+  max-height: calc(100% - 250px);
   &::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -201,116 +202,111 @@ function Report() {
 
   useEffect(() => {}, [response]);
   return (
-    <div>
-      <Container>
-        <Title>Evaluation Report</Title>
-        <div style={{ marginBottom: "20px" }}>
-          <Players color="var(--green)">
-            Top 3:{" "}
-            {response && response.TopPlayers
-              ? getPlayerRanking(response.TopPlayers)
-              : "-"}
-          </Players>
-          <Players color="var(--red)">
-            Bottom 3:{" "}
-            {response && response.BottomPlayers
-              ? getPlayerRanking(response.BottomPlayers)
-              : "-"}
-          </Players>
-        </div>
+    <Container>
+      <Title>Evaluation Report</Title>
+      <div style={{ marginBottom: "20px" }}>
+        <Players color="var(--green)">
+          Top 3:{" "}
+          {response && response.TopPlayers
+            ? getPlayerRanking(response.TopPlayers)
+            : "-"}
+        </Players>
+        <Players color="var(--red)">
+          Bottom 3:{" "}
+          {response && response.BottomPlayers
+            ? getPlayerRanking(response.BottomPlayers)
+            : "-"}
+        </Players>
+      </div>
+      <Table>
+        <thead>
+          <Th>Expected Lineup RV</Th>
+          <Th>Expected Lineup RVv</Th>
+          <Th>RV - RVv</Th>
+        </thead>
+        <tbody>
+          <Tr>
+            <Td> {response.RV_lineup ? response.RV_lineup.toFixed(2) : "-"}</Td>
+
+            <Td>
+              {(Number(pitcherData?.pitcher_value) || 0) +
+                (Number(catcherData?.catcher_value) || 0) +
+                (Number(firstBaseData?.first_base_value) || 0) +
+                (Number(secondBaseData?.second_base_value) || 0) +
+                (Number(thirdBaseData?.third_base_value) || 0) +
+                (Number(shortstopData?.shortstop_value) || 0) +
+                (Number(leftFieldData?.left_field_value) || 0) +
+                (Number(centerFieldData?.center_field_value) || 0) +
+                (Number(rightFieldData?.right_field_value) || 0) ===
+              0
+                ? "-"
+                : response.RV_lineup
+                ? (
+                    (Number(pitcherData?.pitcher_value) || 0) +
+                    (Number(catcherData?.catcher_value) || 0) +
+                    (Number(firstBaseData?.first_base_value) || 0) +
+                    (Number(secondBaseData?.second_base_value) || 0) +
+                    (Number(thirdBaseData?.third_base_value) || 0) +
+                    (Number(shortstopData?.shortstop_value) || 0) +
+                    (Number(leftFieldData?.left_field_value) || 0) +
+                    (Number(centerFieldData?.center_field_value) || 0) +
+                    (Number(rightFieldData?.right_field_value) || 0)
+                  ).toFixed(2)
+                : "-"}
+            </Td>
+            <Td>
+              {(Number(pitcherData?.pitcher_value) || 0) +
+                (Number(catcherData?.catcher_value) || 0) +
+                (Number(firstBaseData?.first_base_value) || 0) +
+                (Number(secondBaseData?.second_base_value) || 0) +
+                (Number(thirdBaseData?.third_base_value) || 0) +
+                (Number(shortstopData?.shortstop_value) || 0) +
+                (Number(leftFieldData?.left_field_value) || 0) +
+                (Number(centerFieldData?.center_field_value) || 0) +
+                (Number(rightFieldData?.right_field_value) || 0) ===
+              0
+                ? "-"
+                : response.RV_lineup
+                ? (
+                    response.RV_lineup -
+                    (Number(pitcherData?.pitcher_value) || 0) +
+                    (Number(catcherData?.catcher_value) || 0) +
+                    (Number(firstBaseData?.first_base_value) || 0) +
+                    (Number(secondBaseData?.second_base_value) || 0) +
+                    (Number(thirdBaseData?.third_base_value) || 0) +
+                    (Number(shortstopData?.shortstop_value) || 0) +
+                    (Number(leftFieldData?.left_field_value) || 0) +
+                    (Number(centerFieldData?.center_field_value) || 0) +
+                    (Number(rightFieldData?.right_field_value) || 0)
+                  ).toFixed(2)
+                : "-"}
+            </Td>
+          </Tr>
+        </tbody>
+      </Table>
+      <ScrollSection>
         <Table>
           <thead>
-            <Th>Expected Lineup RV</Th>
-            <Th>Expected Lineup RVv</Th>
+            <Th>Player</Th>
+            <Th>Position</Th>
+            <Th>Expected RV</Th>
+            <Th>Expected RVv</Th>
             <Th>RV - RVv</Th>
           </thead>
           <tbody>
-            <Tr>
-              <Td>
-                {" "}
-                {response.RV_lineup ? response.RV_lineup.toFixed(2) : "-"}
-              </Td>
-
-              <Td>
-                {(Number(pitcherData?.pitcher_value) || 0) +
-                  (Number(catcherData?.catcher_value) || 0) +
-                  (Number(firstBaseData?.first_base_value) || 0) +
-                  (Number(secondBaseData?.second_base_value) || 0) +
-                  (Number(thirdBaseData?.third_base_value) || 0) +
-                  (Number(shortstopData?.shortstop_value) || 0) +
-                  (Number(leftFieldData?.left_field_value) || 0) +
-                  (Number(centerFieldData?.center_field_value) || 0) +
-                  (Number(rightFieldData?.right_field_value) || 0) ===
-                0
-                  ? "-"
-                  : response.RV_lineup
-                  ? (
-                      (Number(pitcherData?.pitcher_value) || 0) +
-                      (Number(catcherData?.catcher_value) || 0) +
-                      (Number(firstBaseData?.first_base_value) || 0) +
-                      (Number(secondBaseData?.second_base_value) || 0) +
-                      (Number(thirdBaseData?.third_base_value) || 0) +
-                      (Number(shortstopData?.shortstop_value) || 0) +
-                      (Number(leftFieldData?.left_field_value) || 0) +
-                      (Number(centerFieldData?.center_field_value) || 0) +
-                      (Number(rightFieldData?.right_field_value) || 0)
-                    ).toFixed(2)
-                  : "-"}
-              </Td>
-              <Td>
-                {(Number(pitcherData?.pitcher_value) || 0) +
-                  (Number(catcherData?.catcher_value) || 0) +
-                  (Number(firstBaseData?.first_base_value) || 0) +
-                  (Number(secondBaseData?.second_base_value) || 0) +
-                  (Number(thirdBaseData?.third_base_value) || 0) +
-                  (Number(shortstopData?.shortstop_value) || 0) +
-                  (Number(leftFieldData?.left_field_value) || 0) +
-                  (Number(centerFieldData?.center_field_value) || 0) +
-                  (Number(rightFieldData?.right_field_value) || 0) ===
-                0
-                  ? "-"
-                  : response.RV_lineup
-                  ? (
-                      response.RV_lineup -
-                      (Number(pitcherData?.pitcher_value) || 0) +
-                      (Number(catcherData?.catcher_value) || 0) +
-                      (Number(firstBaseData?.first_base_value) || 0) +
-                      (Number(secondBaseData?.second_base_value) || 0) +
-                      (Number(thirdBaseData?.third_base_value) || 0) +
-                      (Number(shortstopData?.shortstop_value) || 0) +
-                      (Number(leftFieldData?.left_field_value) || 0) +
-                      (Number(centerFieldData?.center_field_value) || 0) +
-                      (Number(rightFieldData?.right_field_value) || 0)
-                    ).toFixed(2)
-                  : "-"}
-              </Td>
-            </Tr>
+            {renderPlayerRow("Pitcher", 0, pitcherData)}
+            {renderPlayerRow("Catcher", 1, catcherData)}
+            {renderPlayerRow("First", 2, firstBaseData)}
+            {renderPlayerRow("Second", 3, secondBaseData)}
+            {renderPlayerRow("Third", 4, thirdBaseData)}
+            {renderPlayerRow("Shortstop", 5, shortstopData)}
+            {renderPlayerRow("Left", 6, leftFieldData)}
+            {renderPlayerRow("Center", 7, centerFieldData)}
+            {renderPlayerRow("Right", 8, rightFieldData)}
           </tbody>
         </Table>
-        <ScrollSection>
-          <Table>
-            <thead>
-              <Th>Player</Th>
-              <Th>Position</Th>
-              <Th>Expected RV</Th>
-              <Th>Expected RVv</Th>
-              <Th>RV - RVv</Th>
-            </thead>
-            <tbody>
-              {renderPlayerRow("Pitcher", 0, pitcherData)}
-              {renderPlayerRow("Catcher", 1, catcherData)}
-              {renderPlayerRow("First", 2, firstBaseData)}
-              {renderPlayerRow("Second", 3, secondBaseData)}
-              {renderPlayerRow("Third", 4, thirdBaseData)}
-              {renderPlayerRow("Shortstop", 5, shortstopData)}
-              {renderPlayerRow("Left", 6, leftFieldData)}
-              {renderPlayerRow("Center", 7, centerFieldData)}
-              {renderPlayerRow("Right", 8, rightFieldData)}
-            </tbody>
-          </Table>
-        </ScrollSection>
-      </Container>
-    </div>
+      </ScrollSection>
+    </Container>
   );
 }
 
