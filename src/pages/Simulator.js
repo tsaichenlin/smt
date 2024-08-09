@@ -15,8 +15,8 @@ import { runSimulation } from "../components/BackendConnector.js";
 
 const Div = styled.div`
   position: relative;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 800px;
   &::before {
     content: "";
     background-color: var(--dark-gray);
@@ -33,15 +33,19 @@ const Div = styled.div`
 const Content = styled.div`
   display: flex;
   position: relative;
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - 200px);
   box-sizing: border-box;
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
 `;
 const BgLineContainer = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
   top: 60px;
-  height: calc(100% - 60px);
+  height: calc(100% - 50px);
   width: 60%;
   z-index: 0;
   display: flex;
@@ -49,7 +53,7 @@ const BgLineContainer = styled.div`
   justify-content: center;
   padding-left: 25px;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
 `;
 const BgLine = styled.div`
   border: solid 1px var(--gray);
@@ -60,7 +64,8 @@ const BgLine = styled.div`
   position: relative;
   top: 0;
   right: 0;
-
+  box-sizing: border-box;
+  overflow: hidden;
   &::before {
     border-radius: 10px;
 
@@ -84,6 +89,12 @@ const TeamSection = styled.div`
   flex-direction: column;
   gap: 10px;
   padding-top: 20px;
+  @media (max-height: 750px) {
+    padding-top: 0px;
+    @media (max-height: 700px) {
+      transform: translate(50%, 0px);
+    }
+  }
 `;
 
 const Left = styled.div`
@@ -200,8 +211,8 @@ const PopupDiv = styled.div`
 const PopupCard = styled.div`
   position: relative;
   background-color: var(--white);
-  width: 60vw;
-  height: 60vh;
+  width: 40vw;
+  height: 50vh;
   z-index: 6;
   padding: 20px;
   min-width: 400px;
@@ -252,6 +263,40 @@ const Overlay = styled.div`
   }
 `;
 
+const StepList = styled.ol`
+  list-style: none;
+  counter-reset: step-counter;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-top: 15px;
+`;
+
+const StepItem = styled.li`
+  counter-increment: step-counter;
+  margin: 0 0 1em 0;
+  padding-left: 2em;
+  position: relative;
+  font-size: 18px;
+
+  &:before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    background-color: var(--blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+`;
 function Simulator() {
   const { editMode, setEditMode } = useContext(GlobalContext);
   const { editPlayerMode, setEditPlayerMode } = useContext(GlobalContext);
@@ -435,30 +480,48 @@ function Simulator() {
             >
               &#x2715;
             </ExitButton>
-            <h2
+            <div
               style={{
-                color: "var(--gray)",
-                textAlign: "center",
-                margin: "0",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                height: "80%",
               }}
             >
-              Welcome to
-            </h2>
-            <h1
-              style={{ color: "var(--red)", textAlign: "center", margin: "0" }}
-            >
-              Who's on First?
-            </h1>
-            <h4
-              style={{ color: "var(--gray)", textAlign: "center", margin: "0" }}
-            >
-              {" "}
-              A Baseball Defense Simulator
-            </h4>
-            <p style={{ textAlign: "center", color: "var(--gray)" }}>
-              Tutorial gif here plus description, i wil style this better once i
-              add gif
-            </p>
+              <h2
+                style={{
+                  color: "var(--gray)",
+                  textAlign: "center",
+                  margin: "0",
+                }}
+              >
+                Welcome to
+              </h2>
+              <h1
+                style={{
+                  color: "var(--red)",
+                  textAlign: "center",
+                  margin: "0",
+                }}
+              >
+                Who's on First?
+              </h1>
+              <h4
+                style={{
+                  color: "var(--gray)",
+                  textAlign: "center",
+                  margin: "0",
+                }}
+              >
+                {" "}
+                A Baseball Defense Simulator
+              </h4>
+              <StepList>
+                <StepItem>Create your lineup.</StepItem>
+                <StepItem>Simulate Defense with the model.</StepItem>
+                <StepItem>View defense evaluation!</StepItem>
+              </StepList>{" "}
+            </div>
           </PopupCard>
         </PopupDiv>
       )}
