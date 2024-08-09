@@ -15,8 +15,8 @@ import { runSimulation } from "../components/BackendConnector.js";
 
 const Div = styled.div`
   position: relative;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 800px;
   &::before {
     content: "";
     background-color: var(--dark-gray);
@@ -89,6 +89,12 @@ const TeamSection = styled.div`
   flex-direction: column;
   gap: 10px;
   padding-top: 20px;
+  @media (max-height: 750px) {
+    padding-top: 0px;
+    @media (max-height: 700px) {
+      transform: translate(50%, 0px);
+    }
+  }
 `;
 
 const Left = styled.div`
