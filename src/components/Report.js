@@ -255,29 +255,20 @@ function Report() {
                 : "-"}
             </Td>
             <Td>
-              {(Number(pitcherData?.pitcher_value) || 0) +
-                (Number(catcherData?.catcher_value) || 0) +
-                (Number(firstBaseData?.first_base_value) || 0) +
-                (Number(secondBaseData?.second_base_value) || 0) +
-                (Number(thirdBaseData?.third_base_value) || 0) +
-                (Number(shortstopData?.shortstop_value) || 0) +
-                (Number(leftFieldData?.left_field_value) || 0) +
-                (Number(centerFieldData?.center_field_value) || 0) +
-                (Number(rightFieldData?.right_field_value) || 0) ===
-              0
-                ? "-"
-                : response.RV_lineup
+              {response.RV_lineup
                 ? (
-                    response.RV_lineup -
-                    (Number(pitcherData?.pitcher_value) || 0) +
-                    (Number(catcherData?.catcher_value) || 0) +
-                    (Number(firstBaseData?.first_base_value) || 0) +
-                    (Number(secondBaseData?.second_base_value) || 0) +
-                    (Number(thirdBaseData?.third_base_value) || 0) +
-                    (Number(shortstopData?.shortstop_value) || 0) +
-                    (Number(leftFieldData?.left_field_value) || 0) +
-                    (Number(centerFieldData?.center_field_value) || 0) +
-                    (Number(rightFieldData?.right_field_value) || 0)
+                    response.RV_lineup.toFixed(2) -
+                    (
+                      (Number(pitcherData?.pitcher_value) || 0) +
+                      (Number(catcherData?.catcher_value) || 0) +
+                      (Number(firstBaseData?.first_base_value) || 0) +
+                      (Number(secondBaseData?.second_base_value) || 0) +
+                      (Number(thirdBaseData?.third_base_value) || 0) +
+                      (Number(shortstopData?.shortstop_value) || 0) +
+                      (Number(leftFieldData?.left_field_value) || 0) +
+                      (Number(centerFieldData?.center_field_value) || 0) +
+                      (Number(rightFieldData?.right_field_value) || 0)
+                    ).toFixed(2)
                   ).toFixed(2)
                 : "-"}
             </Td>
