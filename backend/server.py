@@ -53,12 +53,6 @@ situation_id = []
 for x in situation:
     situation_id.append(x[3] * 8 + x[2] * 4 + x[1] * 2 + x[0])
 base_RV = 7217.105
-print(model.predict([
-            np.asarray(batted_bal[:3890]).astype('float32'),
-            np.asarray(situation_id[:3890]).astype('float32'),
-            np.asarray(lineup[:3890]).astype('float32'),
-            np.tile(np.array([1,2,3,4,4,5,6,7,8,9]), (3890, 1))
-        ])[0].sum())
 print('initialized')
 ans = {
     'RV_player': [],
@@ -78,13 +72,13 @@ def members():
             np.asarray(batted_bal[:3890]).astype('float32'),
             np.asarray(situation_id[:3890]).astype('float32'),
             np.asarray(lineup[:3890]).astype('float32'),
-            np.tile(np.array([1,2,3,4,4,5,6,7,8,9]), (3890, 1))
+            np.tile(np.array([0,1,2,3,4,5,6,7,8,9]), (3890, 1))
         ])[0].sum()
-        print(lineup[0],RV)
+        print(lineup[0],RV) 
         if a==0:
             RV_lineup.append(float(base_RV - RV))
         else:
-             RV_lineup.append(float(base_RV - RV_lineup[0] - RV)*748/base_RV)
+             RV_lineup.append(float(RV - base_RV + RV_lineup[0] )*748/base_RV)
     ans['RV_player'] = RV_lineup[1:]
     ans['RV_lineup'] = RV_lineup[0]*748/base_RV
     print(global_data['data'])  # Access the global variable
@@ -98,6 +92,7 @@ def members():
         bottom.append(global_data['data'][a[0]])
     ans['TopPlayers'] = top
     ans['BottomPlayers'] = bottom
+    print(ans)
     return jsonify(ans)
 
 @app.route('/data', methods=['POST'])
