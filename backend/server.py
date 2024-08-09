@@ -35,7 +35,12 @@ class WeightedAverageLayer(tf.keras.layers.Layer):
         # Calculate the weighted average
         weighted_average = weighted_sum / weights_sum
         return weighted_average
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path='',
+    static_folder='../build',
+    template_folder='../build'
+)
 CORS(app)
 tf.keras.config.enable_unsafe_deserialization()
 print("start")
