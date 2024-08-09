@@ -117,6 +117,7 @@ const ImgContainer = styled.div`
   justify-content: center;
   padding: 0 20px;
   box-sizing: border-box;
+  padding-top: 50px;
 `;
 
 const FieldZoom = styled(FieldSVG)`
