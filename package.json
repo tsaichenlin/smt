@@ -2,7 +2,7 @@
   "name": "smt",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@tensorflow/tfjs": "^4.20.0",
