@@ -37,12 +37,12 @@ class WeightedAverageLayer(tf.keras.layers.Layer):
         return weighted_average
 app = Flask(__name__)
 CORS(app)
-tf.keras.config.enable_unsafe_deserialization()
 print("start")
 batted_bal = json.load(open('./data/batted_ball_Input.json'))
 situation = json.load(open('./data/situation_Input.json'))
 print('json loaded')
 model = tf.keras.models.load_model('./model/saved_model_SitEmb_input0_refined_properWeighted_noPlayerKey_withAttention_fixedlineup_retrian_normalize.keras', custom_objects={'WeightedAverageLayer': WeightedAverageLayer})
+model.summary()
 lineup = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 lineup = np.tile(np.array(lineup), (3890, 1))
 
@@ -52,12 +52,13 @@ global_data = {'data': '404'}
 situation_id = []
 for x in situation:
     situation_id.append(x[3] * 8 + x[2] * 4 + x[1] * 2 + x[0])
-base_RV = model.predict([
-    np.asarray(batted_bal[:3890]).astype('float32'),
-    np.asarray(situation_id[:3890]).astype('float32'),
-    np.asarray(lineup[:3890]).astype('float32'),
-    np.asarray(lineup[:3890]).astype('float32')
-])[0].sum()
+base_RV = 7217.105
+print(model.predict([
+            np.asarray(batted_bal[:3890]).astype('float32'),
+            np.asarray(situation_id[:3890]).astype('float32'),
+            np.asarray(lineup[:3890]).astype('float32'),
+            np.tile(np.array([1,2,3,4,4,5,6,7,8,9]), (3890, 1))
+        ])[0].sum())
 print('initialized')
 ans = {
     'RV_player': [],
@@ -77,14 +78,15 @@ def members():
             np.asarray(batted_bal[:3890]).astype('float32'),
             np.asarray(situation_id[:3890]).astype('float32'),
             np.asarray(lineup[:3890]).astype('float32'),
-            np.asarray(np.tile(np.array([1,2,3,4,4,5,6,7,8,9]), (3890, 1))).astype('float32')
+            np.tile(np.array([1,2,3,4,4,5,6,7,8,9]), (3890, 1))
         ])[0].sum()
+        print(lineup[0],RV)
         if a==0:
             RV_lineup.append(float(base_RV - RV))
         else:
-             RV_lineup.append(float(base_RV - RV_lineup[0] - RV))
+             RV_lineup.append(float(base_RV - RV_lineup[0] - RV)*748/base_RV)
     ans['RV_player'] = RV_lineup[1:]
-    ans['RV_lineup'] = RV_lineup[0]
+    ans['RV_lineup'] = RV_lineup[0]*748/base_RV
     print(global_data['data'])  # Access the global variable
     order = sorted(list(enumerate(RV_lineup[1:])), key=lambda x:x[1])
     global_data['data']
@@ -104,7 +106,9 @@ def receive_data():
     received_data = request.get_json()
     if isinstance(received_data['data'], str):
         # Convert the JSON string to a Python list
-        global_data['data'] = json.loads(received_data['data'])
+        global_data['data'] = []
+        for a in json.loads(received_data['data']):
+            global_data['data'].append(int(a))
     else:
         global_data['data'] = received_data['data']
     print(global_data)  # You can process the data here
