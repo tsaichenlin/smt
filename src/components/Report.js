@@ -118,13 +118,13 @@ function Report() {
   };
 
   const getPlayerName = (id) => {
+    console.log([id]);
     if (averagePlayers[id]) {
       return averagePlayers[id];
     }
 
     for (const position in globalPlayers) {
-      if (globalPlayers[position].id === id) {
-        console.log(globalPlayers[position].name);
+      if (globalPlayers[position].id == id) {
         return globalPlayers[position].name;
       }
     }
@@ -133,11 +133,11 @@ function Report() {
   };
 
   const getPlayerRanking = (playerList) => {
-    console.log(response);
-    return playerList
+    const result = playerList
       .map((id) => getPlayerName(id))
       .filter((name) => name)
       .join(", ");
+    return result;
   };
 
   const positionKeyMap = {
@@ -178,9 +178,9 @@ function Report() {
     const playerValue =
       playerData && response ? Number(playerData[playerKey]).toFixed(2) : "-";
 
-    if (playerData) {
+    /* if (playerData) {
       console.log("num ", playerData, playerKey);
-    }
+    }*/
     const difference =
       response && playerData
         ? (

@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Start from "./pages/Start";
 import Simulator from "./pages/Simulator";
 import background from "./background.png";
-import About from "./pages/About";
 import How from "./pages/How";
 //import { TransitionGroup, CSSTransition } from "react-transition-group";
 import SendDataComponent from "./components/SendDataComponent";
@@ -16,7 +15,6 @@ function App() {
         <Routes>
           <Route path="/" index element={<Start />}></Route>
           <Route path="sim" element={<Simulator />}></Route>
-          <Route path="about" element={<About />}></Route>
           <Route path="how" element={<How />}></Route>
           <Route path="flask" element={<SendDataComponent />}></Route>
         </Routes>
