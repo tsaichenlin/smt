@@ -28,6 +28,6 @@ You can navigate to the web app by visiting <code>http://localhost:3000/</code> 
 #### Additional Note:
 
 - If the the localhost is unavailable there may be another network using the port and will require additional steps to pause the service using the same port.
-- If additional dependencies are not installed and reported by the terminal run <code>npm install dependencyName</code>.
+- If additional dependencies are not installed, you can resolve it with <code>npm install dependencyName</code>.
 
 ### We hope you enjoy our app!
